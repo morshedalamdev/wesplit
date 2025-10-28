@@ -7,11 +7,6 @@ export default function Sidebar () {
      return (
        <aside className="w-12 h-[calc(100vh-48px)] py-4 flex flex-col justify-between items-center x-bg-glass border-r border-white">
          <div className="flex flex-col gap-3 items-center">
-           <Link href="/dashboard">
-             <Button size="icon" className="rounded-full">
-               <Home />
-             </Button>
-           </Link>
            <Link href="/group/1">
              <UserAvatar />
            </Link>

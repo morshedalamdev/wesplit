@@ -8,8 +8,8 @@ export default function Layout ({
 }) {
      return (
        <>
+         <section className="p-2 mb-12">{children}</section>
          <Navbar />
-         <div className="p-2">{children}</div>
        </>
      );
 }

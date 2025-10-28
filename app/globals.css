@@ -124,16 +124,8 @@
   }
 }
 
-@utility x-nav-item{
-  @apply px-0.5 py-1 font-medium uppercase underline-offset-4 hover:underline;
-}
-
-@utility x-nav-active{
-  @apply font-semibold text-amber-500;
-}
-
 @utility x-group-title{
-  @apply w-28 font-semibold text-sm whitespace-nowrap overflow-hidden overflow-ellipsis;
+  @apply w-44 text-center font-semibold text-sm whitespace-nowrap overflow-hidden overflow-ellipsis;
 }
 
 @utility x-bg-glass {

@@ -12,7 +12,7 @@ export default function Layout ({
          <Header />
          <div className="flex flex-wrap h-[calc(100vh-49px)]">
            <Sidebar />
-           <main className="p-1 basis-0 grow">{children}</main>
+           <main className="relative p-2 basis-0 grow">{children}</main>
          </div>
        </>
      );
