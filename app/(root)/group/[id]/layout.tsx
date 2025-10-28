@@ -8,7 +8,7 @@ export default function Layout ({
 }) {
      return (
        <>
-         <section className="p-2 mb-12">{children}</section>
+         <section className="flex flex-col gap-3 p-2 mb-12">{children}</section>
          <Navbar />
        </>
      );
