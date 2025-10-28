@@ -140,6 +140,10 @@
   @apply bg-gray-100/20 backdrop-blur-sm border-gray-100/30;
 }
 
+@utility x-bg-glass-dark {
+  @apply rounded-md bg-white/50 backdrop-blur-sm border-white x-shadow-sm;
+}
+
 @utility x-animation {
   @apply transition-all transition-discrete duration-300 ease-linear;
 }

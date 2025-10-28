@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Navbar () {
      return (
-       <nav className="flex flex-wrap items-center justify-between px-2 pt-px">
+       <nav className="flex flex-wrap items-center justify-between px-3 py-1 x-bg-glass-dark">
          <h2 className="x-group-title">Group Name</h2>
          <ul className="flex items-center gap-2">
            <li>
