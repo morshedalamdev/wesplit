@@ -1,25 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function Group () {
-const todayString = new Date().toLocaleDateString('en-US', {
-     month: 'long',
-     day: 'numeric',
-     year: 'numeric',
-});
-
      return (
        <>
-         <div className="flex items-center justify-between">
-           <h3 className="font-bold">{todayString}</h3>
-           <div className="flex items-center gap-3">
-             <p>
-               Currency: <b>CNY</b>
-             </p>
-             <p>
-               Split: <b>Equal</b>
-             </p>
-           </div>
-         </div>
          <div className="grid grid-cols-3 gap-3">
            <div className="x-bg-glass-dark px-3 py-2 space-y-1">
              <h4 className="font-medium">Total Expenses</h4>
@@ -35,7 +18,6 @@ const todayString = new Date().toLocaleDateString('en-US', {
            </div>
          </div>
          <div className="x-bg-glass-dark">
-           {/* <h3 className="text-sm font-medium p-2 pb-0 border-b border-gray-200">Members:</h3> */}
            <Table>
              <TableHeader>
                <TableRow>
@@ -74,7 +56,6 @@ const todayString = new Date().toLocaleDateString('en-US', {
            </Table>
          </div>
          <div className="x-bg-glass-dark">
-           {/* <h3 className="text-sm font-medium p-2 pb-0 border-b border-gray-200">Members:</h3> */}
            <Table>
              <TableHeader>
                <TableRow>

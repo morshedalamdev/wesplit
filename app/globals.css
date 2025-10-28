@@ -117,7 +117,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply overflow-hidden text-gray-900 bg-gradient-to-b from-gray-100 to-slate-400 text-xs min-h-dvh max-w-lg mx-auto;
+    @apply overflow-hidden text-gray-900 bg-gradient-to-b from-gray-100 to-slate-400 text-xs min-h-dvh max-w-3xl mx-auto;
   }
   a, button{
     @apply inline-block cursor-pointer;
