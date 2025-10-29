@@ -1,11 +1,5 @@
+import ExpenseDrawer from "@/components/create/ExpenseDrawer";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -22,26 +16,7 @@ export default function Expenses() {
       <div className="flex items-center justify-between p-2 border-b border-gray-200">
         <h3 className="font-medium text-sm">Expenses</h3>
         <div className="flex items-center gap-2">
-          <Select defaultValue="01">
-            <SelectTrigger id="checkout-exp-month-ts6" className="w-40">
-              <SelectValue placeholder="MM" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="01">01</SelectItem>
-              <SelectItem value="02">02</SelectItem>
-              <SelectItem value="03">03</SelectItem>
-              <SelectItem value="04">04</SelectItem>
-              <SelectItem value="05">05</SelectItem>
-              <SelectItem value="06">06</SelectItem>
-              <SelectItem value="07">07</SelectItem>
-              <SelectItem value="08">08</SelectItem>
-              <SelectItem value="09">09</SelectItem>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="11">11</SelectItem>
-              <SelectItem value="12">12</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button>Add</Button>
+          <ExpenseDrawer />
         </div>
       </div>
       <Table>

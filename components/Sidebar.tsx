@@ -2,6 +2,7 @@ import { Home, LogOut, Plus, Settings } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import UserAvatar from "./UserAvatar";
+import GroupDrawer from "./create/GroupDrawer";
 
 export default function Sidebar () {
      return (
@@ -16,11 +17,7 @@ export default function Sidebar () {
            <Link href="/group/3">
              <UserAvatar />
            </Link>
-           <Link href="/create">
-             <Button className="rounded-full" size="icon">
-               <Plus />
-             </Button>
-           </Link>
+           <GroupDrawer />
          </div>
          <div className="flex flex-col gap-3 items-center border-t border-white pt-3">
            <Link href="/settings">
