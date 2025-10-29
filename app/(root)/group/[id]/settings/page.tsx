@@ -71,6 +71,8 @@ export default function Settings () {
            </Field>
            <Field orientation="horizontal">
              <Button type="submit">Update</Button>
+             <Button className="bg-red-500">Leave</Button>
+             <Button className="bg-red-500">Delete</Button>
            </Field>
          </FieldGroup>
        </FieldGroup>
