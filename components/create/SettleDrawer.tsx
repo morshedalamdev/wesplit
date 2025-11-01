@@ -1,6 +1,17 @@
+"use client";
+
+import { useActionState } from "react";
 import { Button } from "../ui/button";
 import { DatePicker } from "../ui/datePicker";
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "../ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "../ui/drawer";
 import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import {
@@ -13,6 +24,8 @@ import {
 import { Textarea } from "../ui/textarea";
 
 export default function SettleDrawer() {
+  // const [state, action, isPending] = useActionState(createGroup);
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -67,9 +80,7 @@ export default function SettleDrawer() {
             </Field>
           </div>
           <Field>
-            <FieldLabel htmlFor="notes">
-              notes
-            </FieldLabel>
+            <FieldLabel htmlFor="notes">notes</FieldLabel>
             <Textarea
               id="notes"
               placeholder="any additional notes..."
