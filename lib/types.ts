@@ -1,21 +1,20 @@
-export type SignupState =
-  | {
-      errors?: {
-        name?: string[];
-        email?: string[];
-        password?: string[];
-        confirmPassword?: string[];
-      };
-      message?: string;
-    }
-  | undefined;
+export type SignupErrors = {
+  name?: string[];
+  email?: string[];
+  password?: string[];
+  confirmPassword?: string[];
+};
 
-export type LoginState =
-  | {
-      errors?: {
-        email?: string[];
-        password?: string[];
-      };
-      email?: FormDataEntryValue | null;
-    }
-  | undefined;
+export type SignupState = { errors?: SignupErrors; message?: string } | undefined;
+
+export type LoginErrors = {
+  email?: string[];
+  password?: string[];
+};
+
+export type LoginState = { errors?: LoginErrors; email?: string | null } | undefined;
+
+  export interface SessionPayload {
+    userId: string;
+    expiresAt: Date;
+  }
