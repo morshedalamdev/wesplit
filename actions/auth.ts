@@ -4,10 +4,12 @@ import bcrypt from 'bcrypt';
 import { getCollection } from "@/lib/db";
 import { LoginSchema, SignupSchema } from "@/lib/validation";
 import { createSession, deleteSession } from '@/lib/session';
-import { redirect } from "next/navigation";
-import { LoginState, SignupState } from '@/lib/types';
+import { LoginState, SignupState, StatusType } from '@/lib/types';
 
-export async function signup(state: SignupState | undefined, formData: FormData): Promise<SignupState> {
+export async function signup(
+  state: SignupState | undefined,
+  formData: FormData
+): Promise<SignupState | undefined> {
   const validatedFields = SignupSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -18,6 +20,8 @@ export async function signup(state: SignupState | undefined, formData: FormData)
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
+      message: "Please Enter Information Correctly",
+      status: StatusType.INFO,
       name: formData.get("name"),
       email: formData.get("email"),
     };
@@ -26,13 +30,15 @@ export async function signup(state: SignupState | undefined, formData: FormData)
   const { name, email, password } = validatedFields.data;
 
   const userCollection = await getCollection("users");
-  if (!userCollection) return { message: "server error!"};
+  if (!userCollection)
+    return { message: "server error!", status: StatusType.ERROR };
 
   const existingUser = await userCollection.findOne({ email });
   if (existingUser)
     return {
-      errors: { email: ["Email already has an account!"] },
-      name: formData.get("name"),
+      errors: { email: ["email already register to the database"] },
+      message: "Email Already Register to the Database",
+      status: StatusType.WARNING,
     };
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -43,10 +49,13 @@ export async function signup(state: SignupState | undefined, formData: FormData)
     password: hashedPassword,
   });
   if (!results.acknowledged)
-    return { message: "An error occurred while creating your account!" };
+    return {
+      message: "An Error Occurred While Creating Account!",
+      status: StatusType.ERROR,
+    };
 
   await createSession(results.insertedId.toString());
-  redirect("/dashboard");
+  return { message: "Successfully Create Account", status: StatusType.SUCCESS };
 }
 
 export async function login(
@@ -61,6 +70,8 @@ export async function login(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
+      message: "Please Enter Information Correctly",
+      status: StatusType.INFO,
       email: formData.get("email"),
     };
   }
@@ -68,23 +79,33 @@ export async function login(
   const { email, password } = validatedFields.data;
 
   const userCollection = await getCollection("users");
-  if (!userCollection) return { message: "server error!" };
+  if (!userCollection) return { message: "server error!", status: StatusType.ERROR };
 
   const existingUser = await userCollection.findOne({ email });
-  if (!existingUser) return { errors: { email: ["user dose next excited!"] } };
+  if (!existingUser) return { errors: { email: ["user dose not excited!"] }, message: "User Dose Not Excited", status: StatusType.WARNING };
 
   const matchedPassword = await bcrypt.compare(
     password,
     existingUser?.password
   );
   if (!matchedPassword)
-    return { errors: { password: ["Password is not correct!"] } };
+    return {
+      errors: { password: ["password is not correct!"] },
+      message: "Password is Not Correct",
+      status: StatusType.WARNING,
+    };
 
   await createSession(existingUser._id.toString());
-  redirect("/dashboard");
+  return { message: "Login Successful", status: StatusType.SUCCESS };
 }
 
-export async function logout() {
+export async function logout(): Promise<{
+  message: string;
+  status: StatusType;
+}> {
   await deleteSession();
-  redirect("/login");
+  return {
+    message: "Logout Successful",
+    status: StatusType.INFO,
+  };
 }

@@ -1,3 +1,11 @@
+export enum StatusType {
+  DEFAULT,
+  SUCCESS,
+  INFO,
+  ERROR,
+  WARNING,
+}
+
 export interface FormError {
   [key: string]: string[] | string | undefined;
 }
@@ -9,7 +17,8 @@ export type SignupState = {
     password?: string[];
     confirmPassword?: string[];
   };
-  message?: string;
+  message: string;
+  status: StatusType;
   name?: FormDataEntryValue | null;
   email?: FormDataEntryValue | null;
 } | null;
@@ -19,23 +28,25 @@ export type LoginState = {
     email?: string[];
     password?: string[];
   };
-  message?: string;
+  message: string;
+  status: StatusType;
   email?: FormDataEntryValue | null;
 } | null;
 
 export type GroupState = {
-  errors: {
+  errors?: {
     name?: string[] | null;
     currency?: string[] | null;
     split?: string[] | null;
     description?: string[] | null;
     avatar?: string[] | null;
   };
-  message?: string | null;
-  name: FormDataEntryValue | null;
-  currency: FormDataEntryValue | null;
-  split: FormDataEntryValue | null;
-};
+  message: string;
+  status: StatusType;
+  name?: FormDataEntryValue | null;
+  currency?: FormDataEntryValue | null;
+  split?: FormDataEntryValue | null;
+} | null;
 
 export interface SessionPayload {
   userId: string;

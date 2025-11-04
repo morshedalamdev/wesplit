@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { login } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,9 +22,17 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import Image from "next/image";
 import Link from "next/link";
+import { showToast } from "@/lib/showToast";
+import { StatusType } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 export default function Login() {
   const [state, action, isPending] = useActionState(login, undefined);
+
+  useEffect(() => {
+    if (state?.message) showToast(state.message, state?.status);
+    if (state?.status === StatusType.SUCCESS) redirect("/dashboard");
+  }, [state]);
 
   return (
     <form action={action}>
@@ -73,7 +81,6 @@ export default function Login() {
               {state?.errors?.password && (
                 <FieldError>{state.errors.password}</FieldError>
               )}
-              {state?.message && <FieldError>{state.message}</FieldError>}
             </Field>
           </FieldGroup>
         </CardContent>

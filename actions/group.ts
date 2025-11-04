@@ -2,10 +2,9 @@
 
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { GroupState } from "@/lib/types";
+import { GroupState, StatusType } from "@/lib/types";
 import { GroupSchema } from "@/lib/validation";
 import { ObjectId } from "mongodb";
-import { redirect } from "next/navigation";
 
 export async function createGroup(state: GroupState | undefined, formData: FormData): Promise<GroupState | undefined> {
   const validatedFields = GroupSchema.safeParse({
@@ -17,6 +16,8 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
+      message: "Please Enter Information Correctly",
+      status: StatusType.INFO,
       name: formData.get("name"),
       currency: formData.get("currency"),
       split: formData.get("split"),
@@ -25,11 +26,24 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
 
   const { name, currency, split } = validatedFields.data;
   const userId = await getUser();
-  if (!userId) return { message: "user not found in the Database", errors: {}, name, currency, split };
+  if (!userId)
+    return {
+      message: "User Not Found in the Database",
+      status: StatusType.ERROR,
+      name,
+      currency,
+      split,
+    };
 
   const groupCollection = await getCollection("groups");
   if (!groupCollection)
-    return { message: "server error!", errors: {}, name, currency, split };
+    return {
+      message: "Server Error!",
+      status: StatusType.ERROR,
+      name,
+      currency,
+      split,
+    };
 
     const existingGroup = await groupCollection.findOne({
       name,
@@ -37,8 +51,9 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
     }); 
     if (existingGroup)
       return {
-        errors: { name: ["The group already exists!"] },
-        name,
+        errors: { name: ["try with another name"] },
+        message: "The Group Already Exists",
+        status: StatusType.WARNING,
         currency,
         split,
       };
@@ -55,10 +70,12 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
 
   if (!results.acknowledged)
     return {
-      message: "An error occurred while creating new group!",
-      errors: {},
+      message: "An Error Occurred While Creating Group",
+      status: StatusType.ERROR,
       name,
       currency,
       split,
     };
+
+    return { message: "Successfully Create Group", status: StatusType.SUCCESS };
 }

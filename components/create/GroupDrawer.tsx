@@ -20,12 +20,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { createGroup } from "@/actions/group";
 import { Spinner } from "../ui/spinner";
+import { showToast } from "@/lib/showToast";
 
 export default function GroupDrawer() {
   const [state, action, isPending] = useActionState(createGroup, undefined);
+  
+    useEffect(() => {
+      if (state?.message) showToast(state.message, state?.status);
+    }, [state]);
 
   return (
     <Drawer>
@@ -103,11 +108,6 @@ export default function GroupDrawer() {
                 )}
               </Field>
             </div>
-            {state?.message && (
-              <Field>
-                <FieldError>{state.message}</FieldError>
-              </Field>
-            )}
           </FieldGroup>
           <DrawerFooter>
             <Button disabled={isPending} type="submit" className="w-full">
