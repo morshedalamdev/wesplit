@@ -1,16 +1,30 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "./lib/dal";
+import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { decrypt } from './lib/session'
+ 
+const protectedRoutes = ['/dashboard']
+const publicRoutes = ['/login', '/signup', '/']
+ 
+export default async function proxy(req: NextRequest) {
+  const path = req.nextUrl.pathname;
+  const isProtectedRoute =
+    protectedRoutes.includes(path) || path.startsWith("/dashboard");
+  const isPublicRoute = publicRoutes.includes(path);
 
-export const runtime = "nodejs";
+  const cookie = (await cookies()).get("user session")?.value;
+  const session = await decrypt(cookie);
 
-export default async function middleware(req: NextRequest){
-     const user = getUser();
+  if (isProtectedRoute && !session?.userId) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  }
+
+  if (isPublicRoute && session?.userId) {
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+  }
 
   return NextResponse.next();
 }
-
+ 
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-  ],
-};
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+}

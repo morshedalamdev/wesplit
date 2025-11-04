@@ -46,7 +46,7 @@ export async function signup(state: SignupState | undefined, formData: FormData)
     return { message: "An error occurred while creating your account!" };
 
   await createSession(results.insertedId.toString());
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function login(
@@ -81,7 +81,7 @@ export async function login(
     return { errors: { password: ["Password is not correct!"] } };
 
   await createSession(existingUser._id.toString());
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function logout() {

@@ -3,7 +3,6 @@ import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { decrypt } from "./session";
-import { redirect } from "next/navigation";
 import { getCollection } from "./db";
 import { ObjectId } from "mongodb";
 
@@ -15,11 +14,10 @@ export const verifySession = cache(async () => {
     typeof session?.userId === "string"
       ? session.userId
       : String(session?.userId);
-
-    if (!session?.userId) {
-      redirect("/login");
-    }
-
+      
+      if (user == undefined) {
+        return { isAuth: false, userId: undefined };
+      }
   return { isAuth: true, userId: user };
 });
 
