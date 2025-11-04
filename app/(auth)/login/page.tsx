@@ -55,8 +55,11 @@ export default function Login() {
                 defaultValue={
                   typeof state?.email === "string" ? state.email : undefined
                 }
-                aria-invalid={state?.errors?.email ? "true" : undefined}
+                aria-invalid={state?.errors?.email ? true : false}
               />
+              {state?.errors?.email && (
+                <FieldError>{state.errors.email}</FieldError>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -65,11 +68,12 @@ export default function Login() {
                 name="password"
                 type="password"
                 placeholder="********"
-                aria-invalid={state?.errors?.password ? "true" : undefined}
+                aria-invalid={state?.errors?.password ? true : false}
               />
               {state?.errors?.password && (
                 <FieldError>{state.errors.password}</FieldError>
               )}
+              {state?.message && <FieldError>{state.message}</FieldError>}
             </Field>
           </FieldGroup>
         </CardContent>

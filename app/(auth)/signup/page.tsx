@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -56,7 +55,7 @@ export default function Signup() {
                 defaultValue={
                   typeof state?.name === "string" ? state.name : undefined
                 }
-                aria-invalid={state?.errors?.name ? "true" : undefined}
+                aria-invalid={state?.errors?.name ? true : false}
               />
               {state?.errors?.name && (
                 <FieldError>{state.errors.name}</FieldError>
@@ -72,7 +71,7 @@ export default function Signup() {
                 defaultValue={
                   typeof state?.email === "string" ? state.email : undefined
                 }
-                aria-invalid={state?.errors?.email ? "true" : undefined}
+                aria-invalid={state?.errors?.email ? true : false}
               />
               {state?.errors?.email && (
                 <FieldError>{state.errors.email}</FieldError>
@@ -85,7 +84,7 @@ export default function Signup() {
                 name="password"
                 type="password"
                 placeholder="********"
-                aria-invalid={state?.errors?.password ? "true" : undefined}
+                aria-invalid={state?.errors?.password ? true : false}
               />
               {state?.errors?.password && (
                 <FieldError>
@@ -107,13 +106,12 @@ export default function Signup() {
                 name="confirmPassword"
                 type="password"
                 placeholder="********"
-                aria-invalid={
-                  state?.errors?.confirmPassword ? "true" : undefined
-                }
+                aria-invalid={state?.errors?.confirmPassword ? true : false}
               />
               {state?.errors?.confirmPassword && (
                 <FieldError>{state.errors.confirmPassword}</FieldError>
               )}
+              {state?.message && <FieldError>{state.message}</FieldError>}
             </Field>
           </FieldGroup>
         </CardContent>

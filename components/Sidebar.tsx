@@ -1,34 +1,39 @@
-import { Home, LogOut, Plus, Settings } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import UserAvatar from "./UserAvatar";
 import GroupDrawer from "./create/GroupDrawer";
+import { logout } from "@/actions/auth";
 
 export default function Sidebar () {
-     return (
-       <aside className="w-12 h-[calc(100vh-48px)] py-4 flex flex-col justify-between items-center x-bg-glass border-r border-white">
-         <div className="flex flex-col gap-3 items-center">
-           <Link href="/group/1">
-             <UserAvatar />
-           </Link>
-           <Link href="/group/2">
-             <UserAvatar />
-           </Link>
-           <Link href="/group/3">
-             <UserAvatar />
-           </Link>
-           <GroupDrawer />
-         </div>
-         <div className="flex flex-col gap-3 items-center border-t border-white pt-3">
-           <Link href="/settings">
-             <Button size="icon" className="rounded-full">
-               <Settings />
-             </Button>
-           </Link>
-           <Button size="icon" className="rounded-full bg-red-600">
-             <LogOut />
-           </Button>
-         </div>
-       </aside>
-     );
+  return (
+    <aside className="w-12 h-[calc(100vh-48px)] py-4 flex flex-col justify-between items-center x-bg-glass border-r border-white">
+      <div className="flex flex-col gap-3 items-center">
+        <Link href="/group/1">
+          <UserAvatar />
+        </Link>
+        <Link href="/group/2">
+          <UserAvatar />
+        </Link>
+        <Link href="/group/3">
+          <UserAvatar />
+        </Link>
+        <GroupDrawer />
+      </div>
+      <div className="flex flex-col gap-3 items-center border-t border-white pt-3">
+        <Link href="/settings">
+          <Button size="icon" className="rounded-full">
+            <Settings />
+          </Button>
+        </Link>
+        <Button
+          onClick={logout}
+          size="icon"
+          className="rounded-full bg-red-600"
+        >
+          <LogOut />
+        </Button>
+      </div>
+    </aside>
+  );
 }
