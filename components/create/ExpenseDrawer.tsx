@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "../ui/button";
 import { DatePicker } from "../ui/datePicker";
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "../ui/drawer";

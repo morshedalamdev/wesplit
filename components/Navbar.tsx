@@ -20,7 +20,7 @@ export default function Navbar () {
           <LayoutGrid />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/group/1/expenses`}>
+      <Link className="x-nav-item" href={`/dashboard/group/1/expenses`}>
         <Button
           size="icon"
           className={`${
@@ -32,7 +32,7 @@ export default function Navbar () {
           <ShoppingCart />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/group/1/settlements`}>
+      <Link className="x-nav-item" href={`/dashboard/group/1/settlements`}>
         <Button
           size="icon"
           className={`${
@@ -44,7 +44,7 @@ export default function Navbar () {
           <ChartNoAxesGantt />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/group/1/members`}>
+      <Link className="x-nav-item" href={`/dashboard/group/1/members`}>
         <Button
           size="icon"
           className={`${
@@ -56,7 +56,7 @@ export default function Navbar () {
           <Users />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/group/1/settings`}>
+      <Link className="x-nav-item" href={`/dashboard/group/1/settings`}>
         <Button
           size="icon"
           className={`${

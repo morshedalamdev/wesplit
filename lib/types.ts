@@ -23,6 +23,20 @@ export type LoginState = {
   email?: FormDataEntryValue | null;
 } | null;
 
+export type GroupState = {
+  errors: {
+    name?: string[] | null;
+    currency?: string[] | null;
+    split?: string[] | null;
+    description?: string[] | null;
+    avatar?: string[] | null;
+  };
+  message?: string | null;
+  name: FormDataEntryValue | null;
+  currency: FormDataEntryValue | null;
+  split: FormDataEntryValue | null;
+};
+
 export interface SessionPayload {
   userId: string;
   expiresAt: Date;

@@ -27,14 +27,14 @@ export const getUser = cache(async () => {
 
   try {
     const userCollection = await getCollection("users");
-    if (!userCollection) return { error: { email: "Server error!" } };
+    if (!userCollection) return null;
 
     const data = await userCollection.findOne({
       _id: new ObjectId(session?.userId),
     });
-    if (data) return session.userId;
 
-    return "user not found in the database!";
+    if (data) return session.userId;
+    return null;
   } catch (error) {
     console.error("Failed to fetch user");
   }

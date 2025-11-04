@@ -9,13 +9,13 @@ export default function Sidebar () {
   return (
     <aside className="w-12 h-[calc(100vh-48px)] py-4 flex flex-col justify-between items-center x-bg-glass border-r border-white">
       <div className="flex flex-col gap-3 items-center">
-        <Link href="/group/1">
+        <Link href="/dashboard/group/1">
           <UserAvatar />
         </Link>
-        <Link href="/group/2">
+        <Link href="/dashboard/group/2">
           <UserAvatar />
         </Link>
-        <Link href="/group/3">
+        <Link href="/dashboard/group/3">
           <UserAvatar />
         </Link>
         <GroupDrawer />
