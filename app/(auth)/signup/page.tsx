@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
-import { showToast } from "@/lib/showToast";
+import { showToast } from "@/lib/utils/showToast";
 import { redirect } from "next/navigation";
 import { StatusType } from "@/lib/types";
 

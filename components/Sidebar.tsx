@@ -6,7 +6,7 @@ import Link from "next/link";
 import UserAvatar from "./UserAvatar";
 import GroupDrawer from "./create/GroupDrawer";
 import { logout } from "@/actions/auth";
-import { showToast } from "@/lib/showToast";
+import { showToast } from "@/lib/utils/showToast";
 import { redirect } from "next/navigation";
 
 export default function Sidebar() {
@@ -22,16 +22,9 @@ export default function Sidebar() {
         <Link href="/dashboard/group/1">
           <UserAvatar />
         </Link>
-        <Link href="/dashboard/group/2">
-          <UserAvatar />
-        </Link>
-        <Link href="/dashboard/group/3">
-          <UserAvatar />
-        </Link>
-        <GroupDrawer />
       </div>
       <div className="flex flex-col gap-3 items-center border-t border-white pt-3">
-        <Link href="/settings">
+        <Link href="/dashboard/settings">
           <Button size="icon" className="rounded-full">
             <Settings />
           </Button>

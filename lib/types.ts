@@ -6,10 +6,6 @@ export enum StatusType {
   WARNING,
 }
 
-export interface FormError {
-  [key: string]: string[] | string | undefined;
-}
-
 export type SignupState = {
   errors?: {
     name?: string[];
@@ -51,4 +47,12 @@ export type GroupState = {
 export interface SessionPayload {
   userId: string;
   expiresAt: Date;
+}
+
+export interface UserType {
+  name: string;
+  email: string;
+  phone?: string;
+  description?: string;
+  avatar?: string;
 }

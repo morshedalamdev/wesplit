@@ -23,7 +23,7 @@ import {
 import { useActionState, useEffect } from "react";
 import { createGroup } from "@/actions/group";
 import { Spinner } from "../ui/spinner";
-import { showToast } from "@/lib/showToast";
+import { showToast } from "@/lib/utils/showToast";
 
 export default function GroupDrawer() {
   const [state, action, isPending] = useActionState(createGroup, undefined);

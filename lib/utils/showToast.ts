@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { StatusType } from "./types";
+import { StatusType } from "../types";
 
 export function showToast(message: string, status: StatusType = StatusType.DEFAULT){
      const styleMap: Record<StatusType, React.CSSProperties> = {

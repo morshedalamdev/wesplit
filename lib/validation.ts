@@ -31,6 +31,37 @@ export const LoginSchema = z.object({
   password: z.string().min(8, { error: "Password is required." }).trim(),
 });
 
+export const UpdateUserSchema = z.object({
+  name: z
+    .string()
+    .min(2, { error: "Name must be at least 2 characters long." })
+    .trim(),
+  email: z.email({ error: "Please enter a valid email." }).trim(),
+  description: z
+    .string()
+    .min(10, { error: "Note mush be at least 10 characters long." })
+    .trim(),
+  phone: z
+    .string()
+    .trim()
+    .min(8, { error: "Phone number must be at least 8 digits." })
+    .regex(/^\+?[1-9]\d{1,14}$/, {
+      error: "Please enter a valid international phone number (E.164 format).",
+    }),
+  avatar: z
+    .instanceof(File)
+    .refine((file) => file.size <= 1_000_000, {
+      error: "Image size must be less than 1MB.",
+    })
+    .refine(
+      (file) =>
+        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+          file.type
+        ),
+      { error: "Only JPEG, PNG, or WEBP images are allowed." }
+    ),
+});
+
 export const GroupSchema = z.object({
   name: z
     .string()

@@ -21,21 +21,9 @@ export const verifySession = cache(async () => {
   return { isAuth: true, userId: user };
 });
 
-export const getUser = cache(async () => {
+export const getUserId = cache(async () => {
   const session = await verifySession();
   if (!session) return null;
 
-  try {
-    const userCollection = await getCollection("users");
-    if (!userCollection) return null;
-
-    const data = await userCollection.findOne({
-      _id: new ObjectId(session?.userId),
-    });
-
-    if (data) return session.userId;
-    return null;
-  } catch (error) {
-    console.error("Failed to fetch user");
-  }
+  return session.userId;
 });

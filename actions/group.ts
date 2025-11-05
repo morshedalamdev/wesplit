@@ -1,6 +1,6 @@
 "use server";
 
-import { getUser } from "@/lib/dal";
+import { getUserId } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
 import { GroupState, StatusType } from "@/lib/types";
 import { GroupSchema } from "@/lib/validation";
@@ -25,7 +25,7 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
   }
 
   const { name, currency, split } = validatedFields.data;
-  const userId = await getUser();
+  const userId = await getUserId();
   if (!userId)
     return {
       message: "User Not Found in the Database",
