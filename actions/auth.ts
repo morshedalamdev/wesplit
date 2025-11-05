@@ -57,7 +57,7 @@ export async function signup(
       message: "An Error Occurred While Creating Account!",
       status: StatusType.ERROR,
     };
-
+    
   await createSession(result.insertedId.toString());
   return { message: "Successfully Create Account", status: StatusType.SUCCESS };
 }
@@ -144,52 +144,51 @@ export async function updateUser(
     };
   }
 
-  const {name, email, phone, description, avatar} = validatedFields.data;
-  const convertedAvatar = await imageToBase64(avatar);
+  const { name, email, phone, description, avatar } = validatedFields.data;
+  let data;
+
+  if (avatar?.size > 0) {
+    const convertedAvatar = await imageToBase64(avatar);
+    data = {
+      name,
+      email,
+      phone,
+      description,
+      avatar: convertedAvatar,
+      updatedAt: new Date(),
+    };
+  } else {
+    data = {
+      name,
+      email,
+      phone,
+      description,
+      updatedAt: new Date(),
+    };
+  }
+
+  console.log("data :>> ", data);
 
   const userCollection = await getCollection("users");
   if (!userCollection)
     return { message: "Sever Error", status: StatusType.ERROR };
 
   const userId = await getUserId();
-  if (!userId) return { message: "User Not Found in the Session", status: StatusType.ERROR };
+  if (!userId)
+    return {
+      message: "User Not Found in the Session",
+      status: StatusType.ERROR,
+    };
 
   userCollection.findOneAndUpdate(
     { _id: new ObjectId(userId) },
     {
-      $set: {
-        name,
-        email,
-        phone,
-        description,
-        avatar: convertedAvatar,
-        updatedAt: new Date(),
-      },
+      $set: data,
     }
   );
 
   return {
     message: "Successfully Updated User Information",
     status: StatusType.SUCCESS,
-  };
-}
-
-export async function userData(): Promise<UserType | null> {
-  const userCollection = await getCollection("users");
-  if (!userCollection) return null;
-
-  const userId = await getUserId();
-  if (!userId) return null;
-
-  const data = await userCollection.findOne({
-    _id: new ObjectId(userId),
-  });
-
-  return {
-    name: data?.name,
-    email: data?.email,
-    phone: data?.phone,
-    description: data?.description,
-    avatar: data?.avatar,
   };
 }

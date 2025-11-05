@@ -3,10 +3,8 @@ import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { decrypt } from "./session";
-import { getCollection } from "./db";
-import { ObjectId } from "mongodb";
 
-export const verifySession = cache(async () => {
+export const verifyJWT = cache(async () => {
   const cookieStore = (await cookies()).get("user session")?.value;
   const session = await decrypt(cookieStore);
 
@@ -21,9 +19,9 @@ export const verifySession = cache(async () => {
   return { isAuth: true, userId: user };
 });
 
-export const getUserId = cache(async () => {
-  const session = await verifySession();
+export const getUserId = async () => {
+  const session = await verifyJWT();
   if (!session) return null;
 
   return session.userId;
-});
+};

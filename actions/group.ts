@@ -2,7 +2,7 @@
 
 import { getUserId } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { GroupState, StatusType } from "@/lib/types";
+import { GroupState, GroupType, StatusType } from "@/lib/types";
 import { GroupSchema } from "@/lib/validation";
 import { ObjectId } from "mongodb";
 
@@ -78,4 +78,47 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
     };
 
     return { message: "Successfully Create Group", status: StatusType.SUCCESS };
+}
+
+export async function getGroups(): Promise<GroupType[] | null> {
+  const userId = await getUserId();
+  if (!userId) return null;
+
+  const groupCollection = await getCollection("groups");
+  if (!groupCollection) return null;
+
+  const groups = await groupCollection
+    .find({
+      ownerId: new ObjectId(userId),
+    })
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  const plainGroups = groups.map((group) => ({
+    ...group,
+    _id: group._id.toString(),
+    ownerId: group.ownerId.toString(),
+  }));
+
+  return plainGroups;
+}
+
+export async function getGroup(groupId: string) {
+  const userId = await getUserId();
+  if (!userId) return null;
+
+  const groupCollection = await getCollection("groups");
+  if (!groupCollection) return null;
+
+  const group = await groupCollection.findOne({
+    _id: new ObjectId(groupId),
+  });
+console.log('group :>> ', group);
+  // const plainGroups = groups.map((group) => ({
+  //   ...group,
+  //   _id: group._id.toString(),
+  //   ownerId: group.ownerId.toString(),
+  // }));
+
+  // return plainGroups;
 }

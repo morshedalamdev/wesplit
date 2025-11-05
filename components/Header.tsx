@@ -3,22 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { userData } from "@/actions/auth";
-import { Skeleton } from "./ui/skeleton";
+import { useUser } from "@/contexts/userContext";
 
 export default function Header () {
+  const { userAvatar } = useUser();
   const pathname = usePathname();
-  const [userAvatar, setUserAvatar] = useState<string | null>(null);
-  
-  useEffect(() => {
-      const fetchData = async () => {
-        const user = await userData();
-        setUserAvatar(user?.avatar || null);
-      };
-  
-      fetchData();
-    }, []);
 
      return (
        <header className="w-full flex items-center justify-between px-4 py-2 x-bg-glass border-b border-white">
@@ -37,15 +26,11 @@ export default function Header () {
          <Link href="/">
            {userAvatar !== null ? (
              <Image
-               src={
-                 userAvatar
-                   ? `data:image/jpeg;base64,${userAvatar}`
-                   : "/default-avatar.png"
-               }
+               src={userAvatar}
                alt="User Avatar"
                width={32}
                height={32}
-               className="rounded-full"
+               className="rounded-full object-cover"
              />
            ) : (
              <div className="w-8 h-8 rounded-full bg-gray-500" />

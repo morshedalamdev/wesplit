@@ -6,6 +6,19 @@ export enum StatusType {
   WARNING,
 }
 
+export enum RoleType {
+  admin,
+  contributor,
+  editor,
+  viewer
+}
+
+export enum splitType {
+  equal,
+  exact,
+  percentage,
+}
+
 export type SignupState = {
   errors?: {
     name?: string[];
@@ -50,9 +63,24 @@ export interface SessionPayload {
 }
 
 export interface UserType {
+  id: string,
   name: string;
   email: string;
   phone?: string;
   description?: string;
   avatar?: string;
+}
+
+export interface GroupType {
+  _id: string;
+  name: string;
+  ownerId: string;
+  groupAvatar?: string;
+  description?: string;
+  createdAt: string;
+  updatedAt?: string;
+  settings: {
+    currency: string;
+    defaultSplit: string;
+  };
 }
