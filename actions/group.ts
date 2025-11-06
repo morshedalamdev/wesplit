@@ -58,7 +58,7 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
         split,
       };
 
-  const results = await groupCollection.insertOne({
+  const group = await groupCollection.insertOne({
     createdAt: new Date(),
     name,
     ownerId: new ObjectId(userId),
@@ -68,13 +68,33 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
     },
   });
 
-  if (!results.acknowledged)
+  if (!group.acknowledged)
     return {
       message: "An Error Occurred While Creating Group",
       status: StatusType.ERROR,
       name,
       currency,
       split,
+    }
+
+    const membershipCollection = await getCollection("memberships");
+    if (!membershipCollection)
+      return {
+        message: "Membership Collection Error",
+        status: StatusType.ERROR,
+      };
+
+      const membership = await membershipCollection.insertOne({
+        joinedAt: new Date(),
+        groupId: group.insertedId,
+        userId: new ObjectId(userId),
+        role: "admin",
+      });
+
+  if (!membership.acknowledged)
+    return {
+      message: "An Error Occurred While Creating Membership",
+      status: StatusType.ERROR,
     };
 
     return { message: "Successfully Create Group", status: StatusType.SUCCESS };
@@ -113,7 +133,7 @@ export async function getGroup(groupId: string) {
   const group = await groupCollection.findOne({
     _id: new ObjectId(groupId),
   });
-console.log('group :>> ', group);
+  console.log("group :>> ", group);
   // const plainGroups = groups.map((group) => ({
   //   ...group,
   //   _id: group._id.toString(),

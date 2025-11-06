@@ -24,13 +24,17 @@ import { useActionState, useEffect } from "react";
 import { createGroup } from "@/actions/group";
 import { Spinner } from "../ui/spinner";
 import { showToast } from "@/lib/utils/showToast";
+import { StatusType } from "@/lib/types";
+import { useGroup } from "@/contexts/groupContext";
 
 export default function GroupDrawer() {
+  const { refreshMembership } = useGroup();
   const [state, action, isPending] = useActionState(createGroup, undefined);
   
-    useEffect(() => {
-      if (state?.message) showToast(state.message, state?.status);
-    }, [state]);
+  useEffect(() => {
+    if (state?.message) showToast(state.message, state?.status);
+    if (state?.status == StatusType.SUCCESS) refreshMembership();
+  }, [state]);
 
   return (
     <Drawer>

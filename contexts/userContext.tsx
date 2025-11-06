@@ -37,7 +37,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       );
     }
   }, [data]);
-  console.log("userData :>> ", userData);
 
   return (
     <UserContext.Provider

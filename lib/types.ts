@@ -84,3 +84,11 @@ export interface GroupType {
     defaultSplit: string;
   };
 }
+
+export interface GroupsType {
+  groupId: string;
+  name: string;
+  role: string;
+  joinedAt: string;
+  groupAvatar?: string;
+}

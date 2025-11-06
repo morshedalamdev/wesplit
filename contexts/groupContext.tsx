@@ -1,41 +1,41 @@
-import { createContext, ReactNode, useContext, useState } from "react";
-import { GroupType, RoleType } from "../types";
+"use client";
+
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import useSWR, { mutate } from "swr";
+import { fetcher } from "@/lib/fetcher";
+import { GroupType, GroupsType, RoleType } from "@/lib/types";
 
 interface GroupContextType {
-  groupId: string | null;
-  currency: string | null;
-  groupAvatar: string | null;
-  memberRole: RoleType | null;
-  groupData: GroupType | null;
-  setGroupId: (_id: string | null) => void;
-  setCurrency: (name: string | null) => void;
-  setGroupAvatar: (base: string | null) => void;
-  setMemberRole: (role: RoleType | null) => void;
-  setGroupData: (group: GroupType | null) => void;
+  groups: GroupsType[] | null;
+  refreshMembership: () => void;
 }
 
 const GroupContext = createContext<GroupContextType | undefined>(undefined);
 
 export function GroupProvider({ children }: { children: ReactNode }) {
-  const [groupId, setGroupId] = useState<string | null>(null);
+  const { data: groupsData } = useSWR("api/groups", fetcher);
+  const [groups, setGroups] = useState<GroupsType[] | null>(null)
   const [currency, setCurrency] = useState<string | null>(null);
   const [groupAvatar, setGroupAvatar] = useState<string | null>(null);
   const [memberRole, setMemberRole] = useState<RoleType | null>(null);
-  const [groupData, setGroupData] = useState<GroupType | null>(null);
+
+  useEffect(() => {
+    if (groupsData) {
+      setGroups(groupsData);
+    }
+  }, [groupsData]);
 
   return (
     <GroupContext.Provider
       value={{
-        groupId,
-        currency,
-        groupAvatar,
-        memberRole,
-        groupData,
-        setGroupId,
-        setCurrency,
-        setGroupAvatar,
-        setMemberRole,
-        setGroupData,
+        groups,
+        refreshMembership: () => mutate("/api/membership")
       }}
     >
       {children}

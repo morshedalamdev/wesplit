@@ -1,6 +1,19 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+"use client";
 
-export default function Profile() {
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useGroup } from "@/contexts/groupContext";
+import { GroupsType } from "@/lib/types";
+
+export default function Page() {
+  const { groups } = useGroup();
+
   return (
     <section className="flex flex-col gap-3">
       <div className="grid grid-cols-3 gap-3">
@@ -28,38 +41,17 @@ export default function Profile() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell>John Doe</TableCell>
-              <TableCell>Viewer</TableCell>
-              <TableCell>October 13, 2025</TableCell>
-              <TableCell>
-                <button className="text-red-500">Remove</button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Jane Smith</TableCell>
-              <TableCell>Editor</TableCell>
-              <TableCell>November 5, 2025</TableCell>
-              <TableCell>
-                <button className="text-red-500">Remove</button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Mike Johnson</TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>December 1, 2025</TableCell>
-              <TableCell>
-                <button className="text-red-500">Remove</button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Emily Davis</TableCell>
-              <TableCell>Viewer</TableCell>
-              <TableCell>January 10, 2026</TableCell>
-              <TableCell>
-                <button className="text-red-500">Remove</button>
-              </TableCell>
-            </TableRow>
+            {groups &&
+              groups.map((item: GroupsType) => (
+                <TableRow key={item.groupId}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.role}</TableCell>
+                  <TableCell>{item.joinedAt}</TableCell>
+                  <TableCell>
+                    <button className="text-red-500">Remove</button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </div>

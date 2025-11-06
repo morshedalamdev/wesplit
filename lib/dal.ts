@@ -4,19 +4,20 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import { decrypt } from "./session";
 
-export const verifyJWT = cache(async () => {
-  const cookieStore = (await cookies()).get("user session")?.value;
-  const session = await decrypt(cookieStore);
+type SessionPayload = {
+  userId: string;
+};
 
-  const user =
-    typeof session?.userId === "string"
-      ? session.userId
-      : String(session?.userId);
-      
-      if (user == undefined) {
-        return { isAuth: false, userId: undefined };
-      }
-  return { isAuth: true, userId: user };
+export const verifyJWT = cache(async (): Promise<SessionPayload | null> => {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("user session")?.value;
+
+  if (session) {
+    const user = (await decrypt(session)) as SessionPayload;
+    return user;
+  }
+
+  return null;
 });
 
 export const getUserId = async () => {

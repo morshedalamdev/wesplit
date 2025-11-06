@@ -3,27 +3,15 @@
 import { LogOut, Settings } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import UserAvatar from "./UserAvatar";
 import GroupDrawer from "./create/GroupDrawer";
 import { logout } from "@/actions/auth";
 import { showToast } from "@/lib/utils/showToast";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getGroups } from "@/actions/group";
 import Image from "next/image";
-import { GroupType } from "@/lib/types";
+import { useGroup } from "@/contexts/groupContext";
 
 export default function Sidebar() {
-  const [groups, setGroups] = useState<GroupType[] | null>(null);
-
-useEffect(()=>{
-  const fetch = async ()=>{
-    const data = await getGroups();
-    setGroups(data);
-  }
-
-  fetch();
-},[])
+  const { groups } = useGroup();
 
   const handleLogout = async () => {
     const res = await logout();
@@ -35,11 +23,14 @@ useEffect(()=>{
     <aside className="w-12 h-[calc(100vh-48px)] py-4 flex flex-col justify-between items-center x-bg-glass border-r border-white">
       <div className="flex flex-col gap-3 items-center">
         {groups !== null &&
-          groups.map((group) => (
-            <Link key={group?._id} href={`/dashboard/group/${group?._id}`}>
-              {group?.groupAvatar ? (
+          groups.map((item) => (
+            <Link
+              key={item?.groupId}
+              href={`/dashboard/group/${item?.groupId}`}
+            >
+              {item?.groupAvatar ? (
                 <Image
-                  src={`data:image/jpeg;base64,${group.groupAvatar}`}
+                  src={`data:image/jpeg;base64,${item.groupAvatar}`}
                   alt="User Avatar"
                   width={32}
                   height={32}
