@@ -32,8 +32,27 @@ export type LoginState = {
   email?: FormDataEntryValue | null;
 } | null;
 
+export type UserState = {
+  errors?: {
+    name?: string[] | null;
+    email?: string[] | null;
+    avatar?: string[] | null;
+    phone?: string[] | null;
+    description?: string[] | null;
+  };
+  message: string;
+  status: StatusType;
+  name?: FormDataEntryValue | null;
+  email?: FormDataEntryValue | null;
+  avatar?: FormDataEntryValue | null;
+  phone?: FormDataEntryValue | null;
+  description?: FormDataEntryValue | null;
+} | null;
+
 export type GroupState = {
   errors?: {
+    id?: string[] | null;
+    role?: string[] | null;
     name?: string[] | null;
     currency?: string[] | null;
     split?: string[] | null;
@@ -45,6 +64,8 @@ export type GroupState = {
   name?: FormDataEntryValue | null;
   currency?: FormDataEntryValue | null;
   split?: FormDataEntryValue | null;
+  description?: FormDataEntryValue | null;
+  avatar?: FormDataEntryValue | null;
 } | null;
 
 export interface SessionPayload {

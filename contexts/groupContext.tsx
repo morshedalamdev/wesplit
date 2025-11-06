@@ -20,18 +20,31 @@ export function GroupProvider({ children }: { children: ReactNode }) {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
   // API CALL: all memberships group
-  const { data: memberships, mutate: mutateMemberships } = useSWR<MembershipType[]>("/api/groups",fetcher);
+  const { data: memberships, mutate: mutateMemberships } = useSWR<
+    MembershipType[]
+  >("/api/groups", fetcher);
   // API CALL: selected group information
-  const { data: group, mutate: mutateGroup} = useSWR<GroupType>(`/api/groups/${selectedGroupId}`, fetcher);
+  const { data: group, mutate: mutateGroup } = useSWR<GroupType>(
+    selectedGroupId ? `/api/groups/${selectedGroupId}` : null,
+    fetcher
+  );
   // SET: user role for selected group
-  const userRole = selectedGroupId && memberships ? memberships.find((g)=> g.groupId == selectedGroupId)?.role || null : null;
+  const userRole =
+    selectedGroupId && memberships
+      ? memberships.find((g) => g.groupId == selectedGroupId)?.role || null
+      : null;
+
+  // Refresh API Calls
+  const refreshGroup = () => mutateGroup(undefined, { revalidate: true });
+  const refreshMemberships = () =>
+    mutateMemberships(undefined, { revalidate: true });
 
   const value = {
     group: group || null,
     memberships: memberships || null,
     userRole: userRole as RoleType | null,
-    refreshGroup: mutateGroup,
-    refreshMemberships: mutateMemberships,
+    refreshGroup,
+    refreshMemberships,
     selectGroup: setSelectedGroupId,
   };
   return (

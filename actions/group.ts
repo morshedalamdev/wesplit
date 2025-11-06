@@ -3,8 +3,10 @@
 import { getUserId } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
 import { GroupState, StatusType } from "@/lib/types";
+import { imageToBase64 } from "@/lib/utils/imageConvert";
 import { GroupSchema } from "@/lib/validation";
 import { ObjectId } from "mongodb";
+import { redirect } from "next/navigation";
 
 export async function createGroup(state: GroupState | undefined, formData: FormData): Promise<GroupState | undefined> {
   const validatedFields = GroupSchema.safeParse({
@@ -26,14 +28,7 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
 
   const { name, currency, split } = validatedFields.data;
   const userId = await getUserId();
-  if (!userId)
-    return {
-      message: "User Not Found in the Database",
-      status: StatusType.ERROR,
-      name,
-      currency,
-      split,
-    };
+  if (!userId) redirect("/login");
 
   const groupCollection = await getCollection("groups");
   if (!groupCollection)
@@ -98,4 +93,115 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
     };
 
   return { message: "Successfully Create Group", status: StatusType.SUCCESS };
+}
+
+export async function updateGroup(
+  state: GroupState | undefined,
+  formData: FormData
+): Promise<GroupState | undefined> {
+  const validatedFields = GroupSchema.safeParse({
+    id: formData.get("id"),
+    role: formData.get("role"),
+    name: formData.get("name"),
+    currency: formData.get("currency"),
+    split: formData.get("split"),
+    avatar: formData.get("avatar"),
+    description: formData.get("description"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Please Enter Information Correctly",
+      status: StatusType.INFO,
+      name: formData.get("name"),
+      currency: formData.get("currency"),
+      split: formData.get("split"),
+      avatar: formData.get("avatar"),
+      description: formData.get("description"),
+    };
+  }
+
+  const { id, role, name, currency, split, avatar, description } = validatedFields.data;
+  let data;
+
+  if (avatar?.size > 0) {
+    const convertedAvatar = await imageToBase64(avatar);
+    data = {
+      name,
+      description,
+      groupAvatar: convertedAvatar,
+      updatedAt: new Date(),
+      settings: {
+        currency,
+        defaultSplit: split,
+      },
+    };
+  } else {
+    data = {
+      name,
+      description,
+      updatedAt: new Date(),
+      settings: {
+        currency,
+        defaultSplit: split,
+      },
+    };
+  }
+
+  if (!id) redirect("/dashboard");
+  if (role != "admin") redirect("/dashboard");
+
+  const userId = await getUserId();
+  if (!userId) redirect ("/login")
+
+  const groupCollection = await getCollection("groups");
+  if (!groupCollection)
+    return {
+      message: "Server Error!",
+      status: StatusType.ERROR,
+      name,
+      currency,
+      split,
+      avatar,
+      description,
+    };
+
+    groupCollection.findOneAndUpdate(
+      {_id: new ObjectId(id)},
+      { $set: data}
+    );
+
+  return {
+    message: "Successfully Updated Group Information",
+    status: StatusType.SUCCESS,
+  };
+}
+
+export async function deleteGroup(
+  id: string | undefined,
+  role: string | null
+): Promise<{ message: string; status: StatusType } | undefined> {
+  const userId = await getUserId();
+  if (!userId) redirect("/login");
+
+  if (!id) return { message: "Group Not Found", status: StatusType.ERROR };
+  if (role != "admin")
+    return {
+      message: "Not Authorized for This Action",
+      status: StatusType.WARNING,
+    };
+
+  const groupCollection = await getCollection("groups");
+  if (!groupCollection)
+    return {
+      message: "Server Error!",
+      status: StatusType.ERROR,
+    };
+  await groupCollection?.findOneAndDelete({ _id: new ObjectId(id) });
+  
+  return {
+    message: "Successfully Deleted The Group",
+    status: StatusType.SUCCESS,
+  };
 }

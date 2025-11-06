@@ -18,24 +18,23 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-
   // API CALL: all user information
-  const { data: user, mutate: mutateUser } = useSWR<UserType>("/api/auth", fetcher);
+  const { data: user, mutate: mutateUser } = useSWR<UserType>(
+    "/api/auth",
+    fetcher
+  );
+
+  // Refresh API Call
+  const refreshUser = () => mutateUser(undefined, { revalidate: true });
 
   const value = {
     userAvatar: user?.avatar
       ? `data:image/jpeg;base64,${user.avatar}`
       : "https://github.com/shadcn.png",
     userData: user || null,
-    refreshUser: mutateUser,
+    refreshUser,
   };
-  return (
-    <UserContext.Provider
-      value={value}
-    >
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
 export const useUser = () => {

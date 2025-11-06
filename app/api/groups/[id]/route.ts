@@ -30,6 +30,7 @@ export async function GET(
       defaultSplit: group.settings.defaultSplit,
     },
     description: group?.description,
+    groupAvatar: group?.groupAvatar,
   };
 
   return NextResponse.json(plainData);

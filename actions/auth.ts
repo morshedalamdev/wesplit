@@ -4,10 +4,11 @@ import bcrypt from 'bcrypt';
 import { getCollection } from "@/lib/db";
 import { LoginSchema, SignupSchema, UpdateUserSchema } from "@/lib/validation";
 import { createSession, deleteSession } from '@/lib/session';
-import { LoginState, SignupState, StatusType, UserType } from '@/lib/types';
+import { LoginState, SignupState, StatusType, UserState, UserType } from '@/lib/types';
 import { getUserId } from "@/lib/dal";
 import { ObjectId } from 'mongodb';
 import { imageToBase64 } from '@/lib/utils/imageConvert';
+import { redirect } from 'next/navigation';
 
 export async function signup(
   state: SignupState | undefined,
@@ -121,9 +122,9 @@ export async function logout(): Promise<{
 }
 
 export async function updateUser(
-  state: unknown,
+  state: UserState | undefined,
   formData: FormData
-): Promise<any> {
+): Promise<UserState | undefined> {
   const validatedFields = UpdateUserSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -167,18 +168,12 @@ export async function updateUser(
     };
   }
 
-  console.log("data :>> ", data);
-
   const userCollection = await getCollection("users");
   if (!userCollection)
     return { message: "Sever Error", status: StatusType.ERROR };
 
   const userId = await getUserId();
-  if (!userId)
-    return {
-      message: "User Not Found in the Session",
-      status: StatusType.ERROR,
-    };
+  if (!userId) redirect("/login");
 
   userCollection.findOneAndUpdate(
     { _id: new ObjectId(userId) },
