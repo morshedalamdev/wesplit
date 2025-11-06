@@ -6,18 +6,8 @@ export enum StatusType {
   WARNING,
 }
 
-export enum RoleType {
-  admin,
-  contributor,
-  editor,
-  viewer
-}
-
-export enum splitType {
-  equal,
-  exact,
-  percentage,
-}
+export type RoleType = 'admin' | 'contributor' | 'editor' | 'viewer';
+export type SplitType = "equal" | "exact" | "percentage";
 
 export type SignupState = {
   errors?: {
@@ -72,20 +62,17 @@ export interface UserType {
 }
 
 export interface GroupType {
-  _id: string;
+  groupId: string;
   name: string;
-  ownerId: string;
   groupAvatar?: string;
   description?: string;
-  createdAt: string;
-  updatedAt?: string;
   settings: {
     currency: string;
     defaultSplit: string;
   };
 }
 
-export interface GroupsType {
+export interface MembershipType {
   groupId: string;
   name: string;
   role: string;

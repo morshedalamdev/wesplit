@@ -4,23 +4,33 @@ import { ChartNoAxesGantt, LayoutGrid, Settings2, ShoppingCart, Users } from "lu
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
+import { useGroup } from "@/contexts/groupContext";
 
 export default function Navbar () {
   const pathname = usePathname();
+  const { group, userRole } = useGroup();
 
   return (
     <nav className="absolute bottom-2 left-2 right-2 flex flex-wrap items-center justify-between p-2 x-bg-glass-dark">
-      <Link className="x-nav-item x-nav-active" href={`/group/1`}>
+      <Link
+        className="x-nav-item x-nav-active"
+        href={`/dashboard/group/${group?.groupId}`}
+      >
         <Button
           size="icon"
           className={`${
-            pathname.endsWith("/1") ? "bg-amber-400 hover:bg-amber-400" : ""
+            pathname.endsWith(`${group?.groupId}`)
+              ? "bg-amber-400 hover:bg-amber-400"
+              : ""
           }`}
         >
           <LayoutGrid />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/dashboard/group/1/expenses`}>
+      <Link
+        className="x-nav-item"
+        href={`/dashboard/group/${group?.groupId}/expenses`}
+      >
         <Button
           size="icon"
           className={`${
@@ -32,7 +42,10 @@ export default function Navbar () {
           <ShoppingCart />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/dashboard/group/1/settlements`}>
+      <Link
+        className="x-nav-item"
+        href={`/dashboard/group/${group?.groupId}/settlements`}
+      >
         <Button
           size="icon"
           className={`${
@@ -44,7 +57,10 @@ export default function Navbar () {
           <ChartNoAxesGantt />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/dashboard/group/1/members`}>
+      <Link
+        className="x-nav-item"
+        href={`/dashboard/group/${group?.groupId}/members`}
+      >
         <Button
           size="icon"
           className={`${
@@ -56,18 +72,25 @@ export default function Navbar () {
           <Users />
         </Button>
       </Link>
-      <Link className="x-nav-item" href={`/dashboard/group/1/settings`}>
-        <Button
-          size="icon"
-          className={`${
-            pathname.endsWith("/settings")
-              ? "bg-amber-400 hover:bg-amber-400"
-              : ""
-          }`}
+      {(userRole && userRole == "admin") || userRole == "contributor" ? (
+        <Link
+          className="x-nav-item"
+          href={`/dashboard/group/${group?.groupId}/settings`}
         >
-          <Settings2 />
-        </Button>
-      </Link>
+          <Button
+            size="icon"
+            className={`${
+              pathname.endsWith("/settings")
+                ? "bg-amber-400 hover:bg-amber-400"
+                : ""
+            }`}
+          >
+            <Settings2 />
+          </Button>
+        </Link>
+      ) : (
+        ""
+      )}
     </nav>
   );
 }

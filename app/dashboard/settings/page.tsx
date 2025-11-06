@@ -14,14 +14,13 @@ import Image from "next/image";
 import { useActionState, useEffect } from "react";
 
 export default function Settings () {
-  const {userData, refreshUser} = useUser();
+  const { userData, refreshUser } = useUser();
   const [state, action, isPending] = useActionState(updateUser, undefined);
 
   useEffect(() => {
     if (state?.message) showToast(state.message, state?.status);
     if (state?.status == StatusType.SUCCESS) refreshUser();
   }, [state]);
-  console.log("userData :>> ", userData);
 
   return (
     <form action={action}>

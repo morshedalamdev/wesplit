@@ -2,7 +2,7 @@
 
 import { getUserId } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { GroupState, GroupType, StatusType } from "@/lib/types";
+import { GroupState, StatusType } from "@/lib/types";
 import { GroupSchema } from "@/lib/validation";
 import { ObjectId } from "mongodb";
 
@@ -45,18 +45,18 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
       split,
     };
 
-    const existingGroup = await groupCollection.findOne({
-      name,
-      ownerId: new ObjectId(userId),
-    }); 
-    if (existingGroup)
-      return {
-        errors: { name: ["try with another name"] },
-        message: "The Group Already Exists",
-        status: StatusType.WARNING,
-        currency,
-        split,
-      };
+  const existingGroup = await groupCollection.findOne({
+    name,
+    ownerId: new ObjectId(userId),
+  });
+  if (existingGroup)
+    return {
+      errors: { name: ["try with another name"] },
+      message: "The Group Already Exists",
+      status: StatusType.WARNING,
+      currency,
+      split,
+    };
 
   const group = await groupCollection.insertOne({
     createdAt: new Date(),
@@ -75,21 +75,21 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
       name,
       currency,
       split,
-    }
+    };
 
-    const membershipCollection = await getCollection("memberships");
-    if (!membershipCollection)
-      return {
-        message: "Membership Collection Error",
-        status: StatusType.ERROR,
-      };
+  const membershipCollection = await getCollection("memberships");
+  if (!membershipCollection)
+    return {
+      message: "Membership Collection Error",
+      status: StatusType.ERROR,
+    };
 
-      const membership = await membershipCollection.insertOne({
-        joinedAt: new Date(),
-        groupId: group.insertedId,
-        userId: new ObjectId(userId),
-        role: "admin",
-      });
+  const membership = await membershipCollection.insertOne({
+    joinedAt: new Date(),
+    groupId: group.insertedId,
+    userId: new ObjectId(userId),
+    role: "admin",
+  });
 
   if (!membership.acknowledged)
     return {
@@ -97,48 +97,5 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
       status: StatusType.ERROR,
     };
 
-    return { message: "Successfully Create Group", status: StatusType.SUCCESS };
-}
-
-export async function getGroups(): Promise<GroupType[] | null> {
-  const userId = await getUserId();
-  if (!userId) return null;
-
-  const groupCollection = await getCollection("groups");
-  if (!groupCollection) return null;
-
-  const groups = await groupCollection
-    .find({
-      ownerId: new ObjectId(userId),
-    })
-    .sort({ createdAt: -1 })
-    .toArray();
-
-  const plainGroups = groups.map((group) => ({
-    ...group,
-    _id: group._id.toString(),
-    ownerId: group.ownerId.toString(),
-  }));
-
-  return plainGroups;
-}
-
-export async function getGroup(groupId: string) {
-  const userId = await getUserId();
-  if (!userId) return null;
-
-  const groupCollection = await getCollection("groups");
-  if (!groupCollection) return null;
-
-  const group = await groupCollection.findOne({
-    _id: new ObjectId(groupId),
-  });
-  console.log("group :>> ", group);
-  // const plainGroups = groups.map((group) => ({
-  //   ...group,
-  //   _id: group._id.toString(),
-  //   ownerId: group.ownerId.toString(),
-  // }));
-
-  // return plainGroups;
+  return { message: "Successfully Create Group", status: StatusType.SUCCESS };
 }

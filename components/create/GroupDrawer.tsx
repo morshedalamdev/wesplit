@@ -28,12 +28,12 @@ import { StatusType } from "@/lib/types";
 import { useGroup } from "@/contexts/groupContext";
 
 export default function GroupDrawer() {
-  const { refreshMembership } = useGroup();
+  const { refreshMemberships } = useGroup();
   const [state, action, isPending] = useActionState(createGroup, undefined);
   
   useEffect(() => {
     if (state?.message) showToast(state.message, state?.status);
-    if (state?.status == StatusType.SUCCESS) refreshMembership();
+    if (state?.status == StatusType.SUCCESS) refreshMemberships();
   }, [state]);
 
   return (
