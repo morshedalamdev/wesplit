@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import UserAvatar from "./UserAvatar";
 import { usePathname } from "next/navigation";
+import { useUser } from "@/contexts/userContext";
 
 export default function Header () {
+  const { userAvatar } = useUser();
   const pathname = usePathname();
 
      return (
@@ -23,7 +24,17 @@ export default function Header () {
            <h2 className="x-group-title">Group Name</h2>
          )}
          <Link href="/">
-           <UserAvatar />
+           {userAvatar !== null ? (
+             <Image
+               src={userAvatar}
+               alt="User Avatar"
+               width={32}
+               height={32}
+               className="rounded-full object-cover"
+             />
+           ) : (
+             <div className="w-8 h-8 rounded-full bg-gray-500" />
+           )}
          </Link>
        </header>
      );

@@ -1,5 +1,22 @@
-export interface FormError {
-  [key: string]: string[] | string | undefined;
+export enum StatusType {
+  DEFAULT,
+  SUCCESS,
+  INFO,
+  ERROR,
+  WARNING,
+}
+
+export enum RoleType {
+  admin,
+  contributor,
+  editor,
+  viewer
+}
+
+export enum splitType {
+  equal,
+  exact,
+  percentage,
 }
 
 export type SignupState = {
@@ -9,7 +26,8 @@ export type SignupState = {
     password?: string[];
     confirmPassword?: string[];
   };
-  message?: string;
+  message: string;
+  status: StatusType;
   name?: FormDataEntryValue | null;
   email?: FormDataEntryValue | null;
 } | null;
@@ -19,11 +37,58 @@ export type LoginState = {
     email?: string[];
     password?: string[];
   };
-  message?: string;
+  message: string;
+  status: StatusType;
   email?: FormDataEntryValue | null;
+} | null;
+
+export type GroupState = {
+  errors?: {
+    name?: string[] | null;
+    currency?: string[] | null;
+    split?: string[] | null;
+    description?: string[] | null;
+    avatar?: string[] | null;
+  };
+  message: string;
+  status: StatusType;
+  name?: FormDataEntryValue | null;
+  currency?: FormDataEntryValue | null;
+  split?: FormDataEntryValue | null;
 } | null;
 
 export interface SessionPayload {
   userId: string;
   expiresAt: Date;
+}
+
+export interface UserType {
+  id: string,
+  name: string;
+  email: string;
+  phone?: string;
+  description?: string;
+  avatar?: string;
+}
+
+export interface GroupType {
+  _id: string;
+  name: string;
+  ownerId: string;
+  groupAvatar?: string;
+  description?: string;
+  createdAt: string;
+  updatedAt?: string;
+  settings: {
+    currency: string;
+    defaultSplit: string;
+  };
+}
+
+export interface GroupsType {
+  groupId: string;
+  name: string;
+  role: string;
+  joinedAt: string;
+  groupAvatar?: string;
 }

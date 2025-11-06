@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { signup } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,9 +22,17 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
+import { showToast } from "@/lib/utils/showToast";
+import { redirect } from "next/navigation";
+import { StatusType } from "@/lib/types";
 
 export default function Signup() {
   const [state, action, isPending] = useActionState(signup, undefined);
+
+  useEffect(() => {
+    if (state?.message) showToast(state.message, state?.status);
+    if (state?.status === StatusType.SUCCESS) redirect("/dashboard");
+  }, [state]);
 
   return (
     <form action={action}>
@@ -111,7 +119,6 @@ export default function Signup() {
               {state?.errors?.confirmPassword && (
                 <FieldError>{state.errors.confirmPassword}</FieldError>
               )}
-              {state?.message && <FieldError>{state.message}</FieldError>}
             </Field>
           </FieldGroup>
         </CardContent>

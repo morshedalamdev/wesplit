@@ -3,39 +3,26 @@ import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { decrypt } from "./session";
-import { getCollection } from "./db";
-import { ObjectId } from "mongodb";
 
-export const verifySession = cache(async () => {
-  const cookieStore = (await cookies()).get("user session")?.value;
-  const session = await decrypt(cookieStore);
+type SessionPayload = {
+  userId: string;
+};
 
-  const user =
-    typeof session?.userId === "string"
-      ? session.userId
-      : String(session?.userId);
-      
-      if (user == undefined) {
-        return { isAuth: false, userId: undefined };
-      }
-  return { isAuth: true, userId: user };
+export const verifyJWT = cache(async (): Promise<SessionPayload | null> => {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("user session")?.value;
+
+  if (session) {
+    const user = (await decrypt(session)) as SessionPayload;
+    return user;
+  }
+
+  return null;
 });
 
-export const getUser = cache(async () => {
-  const session = await verifySession();
+export const getUserId = async () => {
+  const session = await verifyJWT();
   if (!session) return null;
 
-  try {
-    const userCollection = await getCollection("users");
-    if (!userCollection) return { error: { email: "Server error!" } };
-
-    const data = await userCollection.findOne({
-      _id: new ObjectId(session?.userId),
-    });
-    if (data) return session.userId;
-
-    return "user not found in the database!";
-  } catch (error) {
-    console.error("Failed to fetch user");
-  }
-});
+  return session.userId;
+};

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { decrypt } from './lib/session'
+import { getUserId } from './lib/dal'
  
 const protectedRoutes = ['/dashboard']
 const publicRoutes = ['/login', '/signup', '/']
@@ -11,14 +10,13 @@ export default async function proxy(req: NextRequest) {
     protectedRoutes.includes(path) || path.startsWith("/dashboard");
   const isPublicRoute = publicRoutes.includes(path);
 
-  const cookie = (await cookies()).get("user session")?.value;
-  const session = await decrypt(cookie);
+  const userId = await getUserId();
 
-  if (isProtectedRoute && !session?.userId) {
+  if (isProtectedRoute && !userId) {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
-  if (isPublicRoute && session?.userId) {
+  if (isPublicRoute && userId) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
 
