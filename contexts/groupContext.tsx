@@ -1,45 +1,54 @@
 "use client";
 
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import useSWR, { mutate } from "swr";
+import { createContext, ReactNode, useContext, useState } from "react";
+import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
-import { GroupType, GroupsType, RoleType } from "@/lib/types";
+import {MembershipType, GroupType, RoleType } from "@/lib/types";
 
 interface GroupContextType {
-  groups: GroupsType[] | null;
-  refreshMembership: () => void;
+  group: GroupType | null;
+  memberships: MembershipType[] | null;
+  userRole: RoleType | null;
+  refreshMemberships: () => void;
+  refreshGroup: () => void;
+  selectGroup: (id: string | null) => void;
 }
 
 const GroupContext = createContext<GroupContextType | undefined>(undefined);
 
 export function GroupProvider({ children }: { children: ReactNode }) {
-  const { data: groupsData } = useSWR("api/groups", fetcher);
-  const [groups, setGroups] = useState<GroupsType[] | null>(null)
-  const [currency, setCurrency] = useState<string | null>(null);
-  const [groupAvatar, setGroupAvatar] = useState<string | null>(null);
-  const [memberRole, setMemberRole] = useState<RoleType | null>(null);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (groupsData) {
-      setGroups(groupsData);
-    }
-  }, [groupsData]);
+  // API CALL: all memberships group
+  const { data: memberships, mutate: mutateMemberships } = useSWR<
+    MembershipType[]
+  >("/api/groups", fetcher);
+  // API CALL: selected group information
+  const { data: group, mutate: mutateGroup } = useSWR<GroupType>(
+    selectedGroupId ? `/api/groups/${selectedGroupId}` : null,
+    fetcher
+  );
+  // SET: user role for selected group
+  const userRole =
+    selectedGroupId && memberships
+      ? memberships.find((g) => g.groupId == selectedGroupId)?.role || null
+      : null;
 
+  // Refresh API Calls
+  const refreshGroup = () => mutateGroup(undefined, { revalidate: true });
+  const refreshMemberships = () =>
+    mutateMemberships(undefined, { revalidate: true });
+
+  const value = {
+    group: group || null,
+    memberships: memberships || null,
+    userRole: userRole as RoleType | null,
+    refreshGroup,
+    refreshMemberships,
+    selectGroup: setSelectedGroupId,
+  };
   return (
-    <GroupContext.Provider
-      value={{
-        groups,
-        refreshMembership: () => mutate("/api/membership")
-      }}
-    >
-      {children}
-    </GroupContext.Provider>
+    <GroupContext.Provider value={value}>{children}</GroupContext.Provider>
   );
 }
 

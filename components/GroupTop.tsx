@@ -1,8 +1,10 @@
 "use client";
 
+import { useGroup } from "@/contexts/groupContext";
 import { usePathname } from "next/navigation";
 
 export default function GroupTop() {
+  const {group} = useGroup();
   const pathname = usePathname();
   const todayString = new Date().toLocaleDateString("en-US", {
     month: "long",
@@ -16,10 +18,10 @@ export default function GroupTop() {
         <h3 className="font-bold">{todayString}</h3>
         <div className="flex items-center gap-3">
           <p>
-            Currency: <b>CNY</b>
+            Currency: <b className="uppercase">{group?.settings?.currency}</b>
           </p>
           <p>
-            Split: <b>Equal</b>
+            Split: <b className="capitalize">{group?.settings?.defaultSplit}</b>
           </p>
         </div>
       </div>

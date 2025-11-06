@@ -9,10 +9,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGroup } from "@/contexts/groupContext";
-import { GroupsType } from "@/lib/types";
+import { MembershipType } from "@/lib/types";
 
 export default function Page() {
-  const { groups } = useGroup();
+  const { memberships } = useGroup();
 
   return (
     <section className="flex flex-col gap-3">
@@ -41,12 +41,12 @@ export default function Page() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {groups &&
-              groups.map((item: GroupsType) => (
-                <TableRow key={item.groupId}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.role}</TableCell>
-                  <TableCell>{item.joinedAt}</TableCell>
+            {memberships &&
+              memberships.map((g: MembershipType) => (
+                <TableRow key={g.groupId}>
+                  <TableCell>{g.name}</TableCell>
+                  <TableCell>{g.role}</TableCell>
+                  <TableCell>{g.joinedAt}</TableCell>
                   <TableCell>
                     <button className="text-red-500">Remove</button>
                   </TableCell>

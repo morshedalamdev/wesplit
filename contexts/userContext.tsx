@@ -4,16 +4,13 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
-  useState,
 } from "react";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { UserType } from "@/lib/types";
 
 interface UserContextType {
-  userId: string | null;
-  userAvatar: string | null;
+  userAvatar: string;
   userData: UserType | null;
   refreshUser: ()=> void;
 }
@@ -21,35 +18,23 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { data } = useSWR<UserType>("/api/auth", fetcher);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [userAvatar, setUserAvatar] = useState<string | null>(null);
-  const [userData, setUserData] = useState<UserType | null>(null);
-
-  useEffect(() => {
-    if (data) {
-      setUserId(data.id);
-      setUserData(data);
-      setUserAvatar(
-        data?.avatar
-          ? `data:image/jpeg;base64,${data.avatar}`
-          : "https://github.com/shadcn.png"
-      );
-    }
-  }, [data]);
-
-  return (
-    <UserContext.Provider
-      value={{
-        userId,
-        userAvatar,
-        userData,
-        refreshUser: () => mutate("/api/auth"),
-      }}
-    >
-      {children}
-    </UserContext.Provider>
+  // API CALL: all user information
+  const { data: user, mutate: mutateUser } = useSWR<UserType>(
+    "/api/auth",
+    fetcher
   );
+
+  // Refresh API Call
+  const refreshUser = () => mutateUser(undefined, { revalidate: true });
+
+  const value = {
+    userAvatar: user?.avatar
+      ? `data:image/jpeg;base64,${user.avatar}`
+      : "https://github.com/shadcn.png",
+    userData: user || null,
+    refreshUser,
+  };
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
 export const useUser = () => {

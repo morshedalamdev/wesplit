@@ -9,9 +9,10 @@ import { showToast } from "@/lib/utils/showToast";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import { useGroup } from "@/contexts/groupContext";
+import { MembershipType } from "@/lib/types";
 
 export default function Sidebar() {
-  const { groups } = useGroup();
+  const { memberships } = useGroup();
 
   const handleLogout = async () => {
     const res = await logout();
@@ -22,15 +23,12 @@ export default function Sidebar() {
   return (
     <aside className="w-12 h-[calc(100vh-48px)] py-4 flex flex-col justify-between items-center x-bg-glass border-r border-white">
       <div className="flex flex-col gap-3 items-center">
-        {groups !== null &&
-          groups.map((item) => (
-            <Link
-              key={item?.groupId}
-              href={`/dashboard/group/${item?.groupId}`}
-            >
-              {item?.groupAvatar ? (
+        {memberships != null &&
+          memberships.map((g: MembershipType) => (
+            <Link key={g?.groupId} href={`/dashboard/group/${g?.groupId}`}>
+              {g?.groupAvatar ? (
                 <Image
-                  src={`data:image/jpeg;base64,${item.groupAvatar}`}
+                  src={`data:image/jpeg;base64,${g.groupAvatar}`}
                   alt="User Avatar"
                   width={32}
                   height={32}
