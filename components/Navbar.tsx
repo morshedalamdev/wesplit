@@ -72,7 +72,7 @@ export default function Navbar () {
           <Users />
         </Button>
       </Link>
-      {userRole && userRole == "admin" ? (
+      {userRole && (userRole == "admin" || userRole == "contributor") ? (
         <Link
           className="x-nav-item"
           href={`/dashboard/group/${group?.groupId}/settings`}

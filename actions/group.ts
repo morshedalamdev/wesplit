@@ -150,7 +150,7 @@ export async function updateGroup(
   }
 
   if (!id) redirect("/dashboard");
-  if (role != "admin") redirect("/dashboard");
+  if (role != "admin" && role != "contributor") redirect("/dashboard");
 
   const userId = await getUserId();
   if (!userId) redirect ("/login")

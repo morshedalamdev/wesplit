@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/contexts/userContext";
+import { useGroup } from "@/contexts/groupContext";
 
 export default function Header () {
   const { userAvatar } = useUser();
+  const {group} = useGroup();
   const pathname = usePathname();
 
      return (
@@ -20,8 +22,8 @@ export default function Header () {
              className="object-contain"
            />
          </Link>
-         {pathname.startsWith("/group") && (
-           <h2 className="x-group-title">Group Name</h2>
+         {pathname.includes("/group") && (
+           <h2 className="x-group-title">{group?.name}</h2>
          )}
          <Link href="/">
            {userAvatar !== null ? (

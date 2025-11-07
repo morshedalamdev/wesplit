@@ -59,7 +59,11 @@ export default function ExpenseDrawer () {
              </div>
            </FieldGroup>
            <DrawerFooter>
-             <Button>Submit</Button>
+             <DrawerClose asChild>
+               <Button disabled={isPending} type="submit" className="w-full">
+                 {isPending ? <Spinner /> : ""}Add
+               </Button>
+             </DrawerClose>
              <DrawerClose asChild>
                <Button variant="outline" className="w-full">
                  Cancel

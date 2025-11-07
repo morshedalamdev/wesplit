@@ -114,9 +114,11 @@ export default function GroupDrawer() {
             </div>
           </FieldGroup>
           <DrawerFooter>
-            <Button disabled={isPending} type="submit" className="w-full">
-              {isPending ? <Spinner /> : ""}Create
-            </Button>
+            <DrawerClose asChild>
+              <Button disabled={isPending} type="submit" className="w-full">
+                {isPending ? <Spinner /> : ""}Create
+              </Button>
+            </DrawerClose>
             <DrawerClose asChild>
               <Button variant="outline" className="w-full">
                 Cancel
