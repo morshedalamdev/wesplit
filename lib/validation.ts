@@ -93,3 +93,9 @@ export const GroupSchema = z.object({
   currency: z.string().trim(),
   split: z.string().trim(),
 });
+
+export const InviteSchema = z.object({
+  id: z.string().trim().optional(),
+  email: z.string().email({ message: "Please enter a valid email." }).trim(),
+  role: z.string({ message: "Please select a role." }).trim(),
+});

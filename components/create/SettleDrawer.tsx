@@ -89,7 +89,11 @@ export default function SettleDrawer() {
           </Field>
         </FieldGroup>
         <DrawerFooter>
-          <Button>Submit</Button>
+          <DrawerClose asChild>
+            <Button disabled={isPending} type="submit" className="w-full">
+              {isPending ? <Spinner /> : ""}Settle
+            </Button>
+          </DrawerClose>
           <DrawerClose asChild>
             <Button variant="outline" className="w-full">
               Cancel

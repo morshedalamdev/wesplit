@@ -5,7 +5,7 @@ import { getCollection } from "@/lib/db";
 import { LoginSchema, SignupSchema, UpdateUserSchema } from "@/lib/validation";
 import { createSession, deleteSession } from '@/lib/session';
 import { LoginState, SignupState, StatusType, UserState, UserType } from '@/lib/types';
-import { getUserId } from "@/lib/dal";
+import { getUser } from "@/lib/dal";
 import { ObjectId } from 'mongodb';
 import { imageToBase64 } from '@/lib/utils/imageConvert';
 import { redirect } from 'next/navigation';
@@ -59,7 +59,7 @@ export async function signup(
       status: StatusType.ERROR,
     };
     
-  await createSession(result.insertedId.toString());
+  await createSession(result.insertedId.toString(), email);
   return { message: "Successfully Create Account", status: StatusType.SUCCESS };
 }
 
@@ -106,7 +106,7 @@ export async function login(
       status: StatusType.WARNING,
     };
 
-  await createSession(existingUser._id.toString());
+  await createSession(existingUser._id.toString(), existingUser.email);
   return { message: "Login Successful", status: StatusType.SUCCESS };
 }
 
@@ -172,11 +172,11 @@ export async function updateUser(
   if (!userCollection)
     return { message: "Sever Error", status: StatusType.ERROR };
 
-  const userId = await getUserId();
-  if (!userId) redirect("/login");
+  const user = await getUser();
+  if (!user) redirect("/login");
 
   userCollection.findOneAndUpdate(
-    { _id: new ObjectId(userId) },
+    { _id: new ObjectId(user.userId) },
     {
       $set: data,
     }

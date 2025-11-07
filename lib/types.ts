@@ -8,6 +8,7 @@ export enum StatusType {
 
 export type RoleType = 'admin' | 'contributor' | 'editor' | 'viewer';
 export type SplitType = "equal" | "exact" | "percentage";
+export type InviteStatusType = "pending" | "accepted";
 
 export type SignupState = {
   errors?: {
@@ -51,8 +52,6 @@ export type UserState = {
 
 export type GroupState = {
   errors?: {
-    id?: string[] | null;
-    role?: string[] | null;
     name?: string[] | null;
     currency?: string[] | null;
     split?: string[] | null;
@@ -68,8 +67,19 @@ export type GroupState = {
   avatar?: FormDataEntryValue | null;
 } | null;
 
+export type InviteState = {
+  errors?: {
+    email?: string[] | null;
+    role?: string[] | null;
+  };
+  message: string;
+  status: StatusType;
+  role?: FormDataEntryValue | null;
+} | null;
+
 export interface SessionPayload {
   userId: string;
+  userMail: string;
   expiresAt: Date;
 }
 
@@ -99,4 +109,15 @@ export interface MembershipType {
   role: string;
   joinedAt: string;
   groupAvatar?: string;
+}
+
+export interface InvitationType {
+  inviteId: string;
+  groupId: string;
+  role: string;
+  status: string;
+  groupName: string;
+  invitedBy: string;
+  createdAt: string;
+  expiresAt: string | number;
 }

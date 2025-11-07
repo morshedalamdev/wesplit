@@ -1,4 +1,4 @@
-import { getUserId } from "@/lib/dal";
+import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
@@ -10,8 +10,8 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const userId = await getUserId();
-  if (!userId)
+  const user = await getUser();
+  if (!user)
     return NextResponse.redirect(
       new URL("/login", process.env.NEXT_PUBLIC_BASE_URL)
     );

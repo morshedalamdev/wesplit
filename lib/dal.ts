@@ -6,6 +6,7 @@ import { decrypt } from "./session";
 
 type SessionPayload = {
   userId: string;
+  userMail: string;
 };
 
 export const verifyJWT = cache(async (): Promise<SessionPayload | null> => {
@@ -20,9 +21,9 @@ export const verifyJWT = cache(async (): Promise<SessionPayload | null> => {
   return null;
 });
 
-export const getUserId = async () => {
+export const getUser = async () => {
   const session = await verifyJWT();
   if (!session) return null;
 
-  return session.userId;
+  return { userId: session.userId, userMail: session.userMail };
 };

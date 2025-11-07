@@ -1,6 +1,6 @@
 "use server";
 
-import { getUserId } from "@/lib/dal";
+import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
 import { GroupState, StatusType } from "@/lib/types";
 import { imageToBase64 } from "@/lib/utils/imageConvert";
@@ -27,8 +27,8 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
   }
 
   const { name, currency, split } = validatedFields.data;
-  const userId = await getUserId();
-  if (!userId) redirect("/login");
+  const user = await getUser();
+  if (!user) redirect("/login");
 
   const groupCollection = await getCollection("groups");
   if (!groupCollection)
@@ -42,7 +42,7 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
 
   const existingGroup = await groupCollection.findOne({
     name,
-    ownerId: new ObjectId(userId),
+    ownerId: new ObjectId(user.userId),
   });
   if (existingGroup)
     return {
@@ -56,7 +56,7 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
   const group = await groupCollection.insertOne({
     createdAt: new Date(),
     name,
-    ownerId: new ObjectId(userId),
+    ownerId: new ObjectId(user.userId),
     settings: {
       currency,
       defaultSplit: split,
@@ -82,7 +82,7 @@ export async function createGroup(state: GroupState | undefined, formData: FormD
   const membership = await membershipCollection.insertOne({
     joinedAt: new Date(),
     groupId: group.insertedId,
-    userId: new ObjectId(userId),
+    userId: new ObjectId(user.userId),
     role: "admin",
   });
 
@@ -150,10 +150,10 @@ export async function updateGroup(
   }
 
   if (!id) redirect("/dashboard");
-  if (role != "admin") redirect("/dashboard");
+  if (role != "admin" && role != "contributor") redirect("/dashboard");
 
-  const userId = await getUserId();
-  if (!userId) redirect ("/login")
+  const user = await getUser();
+  if (!user) redirect ("/login")
 
   const groupCollection = await getCollection("groups");
   if (!groupCollection)
@@ -182,8 +182,8 @@ export async function deleteGroup(
   id: string | undefined,
   role: string | null
 ): Promise<{ message: string; status: StatusType } | undefined> {
-  const userId = await getUserId();
-  if (!userId) redirect("/login");
+  const user = await getUser();
+  if (!user) redirect("/login");
 
   if (!id) return { message: "Group Not Found", status: StatusType.ERROR };
   if (role != "admin")
