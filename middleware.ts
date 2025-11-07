@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserId } from './lib/dal'
+import { getUser } from './lib/dal'
  
 const protectedRoutes = ['/dashboard']
 const publicRoutes = ['/login', '/signup', '/']
@@ -10,13 +10,13 @@ export default async function proxy(req: NextRequest) {
     protectedRoutes.includes(path) || path.startsWith("/dashboard");
   const isPublicRoute = publicRoutes.includes(path);
 
-  const userId = await getUserId();
+  const user = await getUser();
 
-  if (isProtectedRoute && !userId) {
+  if (isProtectedRoute && !user) {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
-  if (isPublicRoute && userId) {
+  if (isPublicRoute && user) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
 
