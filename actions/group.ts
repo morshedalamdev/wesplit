@@ -100,8 +100,8 @@ export async function updateGroup(
   formData: FormData
 ): Promise<GroupState | undefined> {
   const validatedFields = GroupSchema.safeParse({
-    id: formData.get("id"),
-    role: formData.get("role"),
+    groupId: formData.get("groupId"),
+    role: formData.get("userRole"),
     name: formData.get("name"),
     currency: formData.get("currency"),
     split: formData.get("split"),
@@ -122,7 +122,7 @@ export async function updateGroup(
     };
   }
 
-  const { id, role, name, currency, split, avatar, description } = validatedFields.data;
+  const { groupId, role, name, currency, split, avatar, description } = validatedFields.data;
   let data;
 
   if (avatar?.size > 0) {
@@ -149,7 +149,7 @@ export async function updateGroup(
     };
   }
 
-  if (!id) redirect("/dashboard");
+  if (!groupId) redirect("/dashboard");
   if (role != "admin" && role != "contributor") redirect("/dashboard");
 
   const user = await getUser();
@@ -168,7 +168,7 @@ export async function updateGroup(
     };
 
     groupCollection.findOneAndUpdate(
-      {_id: new ObjectId(id)},
+      {_id: new ObjectId(groupId)},
       { $set: data}
     );
 

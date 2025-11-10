@@ -38,7 +38,7 @@ export async function GET(){
   if (!invitations) return NextResponse.json(null);
 
   const plainData = invitations.map((item) => ({
-    inviteId: item._id.toString(),
+    invitedId: item._id.toString(),
     groupId: item.groupId.toString(),
     groupName: item.group.name,
     invitedBy: item.user.name,

@@ -4,7 +4,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import {AllGroupType, GroupType, RoleType, InvitationType, GroupMemberType } from "@/lib/types";
-import { clear } from "@/actions/invite";
+import { clearMember } from "@/actions/invite";
 
 interface GroupContextType {
   group: GroupType | null;
@@ -40,7 +40,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
   );
   // API CALL: selected group members
   const { data: groupMembers, mutate: mutateMembers } = useSWR<GroupMemberType[]>(
-    selectedGroupId ? `/api/membership/${selectedGroupId}` : null,
+    selectedGroupId ? `/api/memberships/${selectedGroupId}` : null,
     fetcher
   );
 
@@ -63,7 +63,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
 
         if (diffDays < -1 && item.status == "pending") {
           // clear the invitation if it expires
-          await clear(item.inviteId);
+          await clearMember(item.invitedId);
           break;
         }
         if (item.status == "pending"){

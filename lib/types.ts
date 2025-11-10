@@ -93,7 +93,7 @@ export interface SessionPayload {
 }
 
 export interface UserType {
-  id: string,
+  userId: string;
   name: string;
   email: string;
   phone?: string;
@@ -121,7 +121,7 @@ export interface AllGroupType {
 }
 
 export interface InvitationType {
-  inviteId: string;
+  invitedId: string;
   groupId: string;
   role: RoleType;
   status: InviteStatusType;

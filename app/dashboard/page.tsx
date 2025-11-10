@@ -1,6 +1,6 @@
 "use client";
 
-import { accept, clear } from "@/actions/invite";
+import { acceptMember, clearMember } from "@/actions/invite";
 import {
   Table,
   TableBody,
@@ -15,12 +15,12 @@ import { InvitationType, AllGroupType } from "@/lib/types";
 export default function Page() {
   const { allGroups, invitations, refreshInvitation, refreshAllGroups } = useGroup();
 
-  const handleRejection = async (id: string) => {
-    await clear(id);
+  const handleRejection = async (invitedId: string) => {
+    await clearMember(invitedId);
     refreshInvitation();
   };
-  const handleAcceptation = async (inviteId: string, groupId: string, role: string) =>{
-    await accept(inviteId, groupId, role);
+  const handleAcceptation = async (invitedId: string, groupId: string, role: string) =>{
+    await acceptMember(invitedId, groupId, role);
     refreshInvitation();
     refreshAllGroups();
   }
@@ -82,21 +82,23 @@ export default function Page() {
             </TableHeader>
             <TableBody>
               {invitations.map((i: InvitationType) => (
-                <TableRow key={i.inviteId}>
+                <TableRow key={i.invitedId}>
                   <TableCell>{i.groupName}</TableCell>
                   <TableCell>{i.invitedBy}</TableCell>
                   <TableCell>{i.createdAt}</TableCell>
                   <TableCell>7 days</TableCell>
                   <TableCell className="flex gap-2">
                     <button
-                      onClick={() => handleAcceptation(i.inviteId, i.groupId, i.role)}
+                      onClick={() =>
+                        handleAcceptation(i.invitedId, i.groupId, i.role)
+                      }
                       className="text-green-600"
                     >
                       Accept
                     </button>
                     |
                     <button
-                      onClick={() => handleRejection(i.inviteId)}
+                      onClick={() => handleRejection(i.invitedId)}
                       className="text-red-500"
                     >
                       Reject

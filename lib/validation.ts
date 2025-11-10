@@ -69,7 +69,7 @@ export const UpdateUserSchema = z.object({
 });
 
 export const GroupSchema = z.object({
-  id: z.string().trim().optional(),
+  groupId: z.string().trim().optional(),
   role: z.string().trim().optional(),
   name: z
     .string()
@@ -95,13 +95,40 @@ export const GroupSchema = z.object({
 });
 
 export const InviteSchema = z.object({
-  id: z.string().trim().optional(),
+  groupId: z.string().trim().optional(),
+  userRole: z.string().trim().optional(),
   email: z.string().email({ message: "Please enter a valid email." }).trim(),
   role: z.string({ message: "Please select a role." }).trim(),
 });
 
 export const MemberUpdateSchema = z.object({
-  id: z.string().trim().optional(),
+  membershipId: z.string().trim().optional(),
   userRole: z.string().trim().optional(),
   role: z.string({ message: "Please select a role." }).trim(),
 });
+
+export const ExpenseSchema = z.object({
+  id: z.string().trim().optional(),
+  role: z.string().trim().optional(),
+  name: z
+    .string()
+    .min(2, { error: "Name must be at least 2 characters long." })
+    .trim(),
+  description: z
+    .string()
+    .min(10, { error: "Note mush be at least 10 characters long." })
+    .trim()
+    .optional(),
+  avatar: z
+    .any()
+    .refine(
+      (file) => {
+        if (!file || typeof file === "string") return true;
+        return file.size <= 1_000_000;
+      },
+      { message: "Image size must be less than 1MB." }
+    )
+    .optional(),
+  currency: z.string().trim(),
+  split: z.string().trim(),
+})
