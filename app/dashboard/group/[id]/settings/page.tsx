@@ -16,19 +16,22 @@ import { redirect } from "next/navigation";
 import { useActionState, useEffect } from "react";
 
 export default function Settings () {
-  const { group, userRole, refreshGroup, refreshMemberships } = useGroup();
+  const { group, userRole, refreshGroup, refreshAllGroups } = useGroup();
   const [state, action, isPending] = useActionState(updateGroup, undefined);
 
   useEffect(() => {
     if (state?.message) showToast(state.message, state?.status);
-    if (state?.status == StatusType.SUCCESS) refreshGroup();
+    if (state?.status == StatusType.SUCCESS) {
+      refreshGroup();
+      refreshAllGroups();
+    }
   }, [state]);
 
   const handleDelete = async () => {
     const result = await deleteGroup(group?.groupId, userRole);
     if(result?.message) showToast(result.message, state?.status);
     if (result?.status == StatusType.SUCCESS){
-      refreshMemberships();
+      refreshAllGroups();
       redirect("/dashboard");
     }
   };
@@ -162,10 +165,7 @@ export default function Settings () {
               {isPending ? <Spinner /> : ""}Update
             </Button>
             <Button className="bg-amber-500">Leave</Button>
-            <Button
-              onClick={handleDelete}
-              className="bg-red-500"
-            >
+            <Button type="button" onClick={handleDelete} className="bg-red-500">
               Delete
             </Button>
           </Field>

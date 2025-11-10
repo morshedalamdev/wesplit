@@ -9,13 +9,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGroup } from "@/contexts/groupContext";
+import { GroupMemberType } from "@/lib/types";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Group() {
   const params = useParams();
   const groupId = params.id as string;
-  const { selectGroup } = useGroup();
+  const { selectGroup, groupMembers } = useGroup();
 
   useEffect(() => {
     selectGroup(groupId);
@@ -49,30 +50,15 @@ export default function Group() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>1</TableCell>
-                <TableCell>John Doe</TableCell>
-                <TableCell>Viewer</TableCell>
-                <TableCell>October 13, 2025</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>2</TableCell>
-                <TableCell>Jane Smith</TableCell>
-                <TableCell>Editor</TableCell>
-                <TableCell>November 5, 2025</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>3</TableCell>
-                <TableCell>Mike Johnson</TableCell>
-                <TableCell>Admin</TableCell>
-                <TableCell>December 1, 2025</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>4</TableCell>
-                <TableCell>Emily Davis</TableCell>
-                <TableCell>Viewer</TableCell>
-                <TableCell>January 10, 2026</TableCell>
-              </TableRow>
+              {groupMembers &&
+                groupMembers.map((g: GroupMemberType, index: number) => (
+                  <TableRow key={g.membershipId}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{g.name}</TableCell>
+                    <TableCell>{g.role}</TableCell>
+                    <TableCell>{g.joinedAt}</TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </div>

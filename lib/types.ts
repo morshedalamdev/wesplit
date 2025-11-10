@@ -77,6 +77,15 @@ export type InviteState = {
   role?: FormDataEntryValue | null;
 } | null;
 
+export type MemberUpdateState = {
+errors?: {
+  role?: string[] | null;
+};
+message: string;
+status: StatusType;
+role?: FormDataEntryValue | null;
+} | null;
+
 export interface SessionPayload {
   userId: string;
   userMail: string;
@@ -103,10 +112,10 @@ export interface GroupType {
   };
 }
 
-export interface MembershipType {
+export interface AllGroupType {
   groupId: string;
   name: string;
-  role: string;
+  role: RoleType;
   joinedAt: string;
   groupAvatar?: string;
 }
@@ -114,10 +123,18 @@ export interface MembershipType {
 export interface InvitationType {
   inviteId: string;
   groupId: string;
-  role: string;
-  status: string;
+  role: RoleType;
+  status: InviteStatusType;
   groupName: string;
   invitedBy: string;
   createdAt: string;
   expiresAt: string | number;
+}
+
+export interface GroupMemberType {
+  membershipId: string;
+  memberId: string;
+  name: string;
+  role: RoleType;
+  joinedAt: string;
 }

@@ -99,3 +99,9 @@ export const InviteSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }).trim(),
   role: z.string({ message: "Please select a role." }).trim(),
 });
+
+export const MemberUpdateSchema = z.object({
+  id: z.string().trim().optional(),
+  userRole: z.string().trim().optional(),
+  role: z.string({ message: "Please select a role." }).trim(),
+});

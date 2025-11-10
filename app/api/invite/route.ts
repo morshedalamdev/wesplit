@@ -35,6 +35,7 @@ export async function GET(){
       { $unwind: "$user" },
     ])
     .toArray();
+  if (!invitations) return NextResponse.json(null);
 
   const plainData = invitations.map((item) => ({
     inviteId: item._id.toString(),
