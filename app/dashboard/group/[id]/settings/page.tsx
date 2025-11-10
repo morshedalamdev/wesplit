@@ -29,7 +29,7 @@ export default function Settings () {
 
   const handleDelete = async () => {
     const result = await deleteGroup(group?.groupId, userRole);
-    if(result?.message) showToast(result.message, state?.status);
+    if(result?.message) showToast(result.message, result?.status);
     if (result?.status == StatusType.SUCCESS){
       refreshAllGroups();
       redirect("/dashboard");

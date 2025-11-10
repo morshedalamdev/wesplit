@@ -3,12 +3,19 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import MemberDrawer from "@/components/create/MemberDrawer";
 import { useGroup } from "@/contexts/groupContext";
-import { GroupMemberType } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { GroupMemberType, StatusType } from "@/lib/types";
 import EditMemberDrawer from "@/components/create/EditMemberDrawer";
+import { deleteMember } from "@/actions/membership";
+import { showToast } from "@/lib/utils/showToast";
 
 export default function Members () {
-  const { groupMembers, userRole } = useGroup();
+  const { refreshGroupMember, userRole, groupMembers } = useGroup();
+  
+    const handleDelete = async (id: string) => {
+      const result = await deleteMember(id, userRole);
+      if (result?.message) showToast(result.message, result?.status);
+      if (result?.status == StatusType.SUCCESS) refreshGroupMember();
+    };
 
   return (
     <div className="x-bg-glass-dark">
@@ -49,7 +56,7 @@ export default function Members () {
                     <EditMemberDrawer data={g}>
                       <button className="text-amber-500">Edit</button>
                     </EditMemberDrawer>
-                    |<button className="text-red-500">Delete</button>
+                    |<button onClick={()=>handleDelete(g.membershipId)} className="text-red-500">Delete</button>
                   </TableCell>
                 )}
               </TableRow>

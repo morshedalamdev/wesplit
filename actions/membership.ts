@@ -52,3 +52,35 @@ export async function update(state: MemberUpdateState | undefined, formData: For
     status: StatusType.SUCCESS,
   };
 }
+
+export async function deleteMember(
+  id: string | undefined,
+  role: string | null
+): Promise<{ message: string; status: StatusType } | undefined> {
+  const user = await getUser();
+  if (!user) redirect("/login");
+
+  if (!id)
+    return {
+      message: "Member not Found in Database",
+      status: StatusType.ERROR,
+    };
+  if (role != "admin")
+    return {
+      message: "Not Authorized for This Action",
+      status: StatusType.WARNING,
+    };
+
+  const membershipCollection = await getCollection("memberships");
+  if (!membershipCollection)
+    return {
+      message: "Server Error!",
+      status: StatusType.ERROR,
+    };
+  await membershipCollection?.findOneAndDelete({ _id: new ObjectId(id) });
+
+  return {
+    message: "Successfully Deleted The Group",
+    status: StatusType.SUCCESS,
+  };
+}
