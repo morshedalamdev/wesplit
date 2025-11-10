@@ -4,13 +4,13 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { InviteState, StatusType } from "@/lib/types";
+import { MemberState, StatusType } from "@/lib/types";
 import { InviteSchema } from "@/lib/validation";
 import { redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
-export async function inviteMember(state: InviteState | undefined, formData: FormData): Promise<InviteState | undefined>{
+export async function inviteMember(state: MemberState | undefined, formData: FormData): Promise<MemberState | undefined>{
   const validatedFields = InviteSchema.safeParse({
     groupId: formData.get("id"),
     userRole: formData.get("userRole"),

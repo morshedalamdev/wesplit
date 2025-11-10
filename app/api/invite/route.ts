@@ -1,5 +1,6 @@
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
+import formatDate from "@/lib/utils/formatDate";
 import { NextResponse } from "next/server";
 
 export async function GET(){
@@ -44,7 +45,7 @@ export async function GET(){
     invitedBy: item.user.name,
     role: item.role,
     status: item.status,
-    createdAt: item.createdAt.toLocaleDateString(),
+    createdAt: formatDate(item.createdAt),
     expiresAt: item.expiresAt.toLocaleDateString(),
   }));
 

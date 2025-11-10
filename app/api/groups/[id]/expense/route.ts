@@ -4,6 +4,7 @@ import formatDate from "@/lib/utils/formatDate";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
+
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
@@ -16,16 +17,16 @@ export async function GET(
       new URL("/login", process.env.NEXT_PUBLIC_BASE_URL)
     );
 
-  const membershipCollection = await getCollection("memberships");
-  if (!membershipCollection) return NextResponse.json(null);
+  const expenseCollection = await getCollection("expenses");
+  if (!expenseCollection) return NextResponse.json(null);
 
-  const members = await membershipCollection
+  const expenses = await expenseCollection
     .aggregate([
       { $match: { groupId: new ObjectId(id) } },
       {
         $lookup: {
           from: "users",
-          localField: "userId",
+          localField: "payerId",
           foreignField: "_id",
           as: "user",
         },
@@ -33,15 +34,19 @@ export async function GET(
       { $unwind: "$user" },
     ])
     .toArray();
-  if (!members) return NextResponse.json(null);
-  
-const plainData = members.map((item) => ({
-  membershipId: item._id.toString(),
-  memberId: item.userId.toString(),
-  name: item.user.name,
-  role: item.role,
-  joinedAt: formatDate(item.joinedAt),
-}));
+  if (!expenses) return NextResponse.json(null);
+
+  const plainData = expenses.map((item) => ({
+    expenseId: item._id.toString(),
+    groupId: item.groupId.toString(),
+    payer: item.user.name,
+    title: item.title,
+    amount: item.amount,
+    split: item.split,
+    notes: item?.notes,
+    receipt: item?.receipt,
+    date: formatDate(item.date),
+  }));
 
   return NextResponse.json(plainData);
 }

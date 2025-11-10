@@ -2,12 +2,12 @@
 
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { MemberUpdateState, StatusType } from "@/lib/types";
+import { MemberState, StatusType } from "@/lib/types";
 import { MemberUpdateSchema } from "@/lib/validation";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
 
-export async function updateMember(state: MemberUpdateState | undefined, formData: FormData):Promise<MemberUpdateState | undefined>{
+export async function updateMember(state: MemberState | undefined, formData: FormData):Promise<MemberState | undefined>{
   const validatedFields = MemberUpdateSchema.safeParse({
     membershipId: formData.get("membershipId"),
     userRole: formData.get("userRole"),

@@ -21,7 +21,7 @@ import { inviteMember } from "@/actions/invite";
 import { StatusType } from "@/lib/types";
 
 export default function MemberDrawer() {
-  const { group, userRole, refreshAllGroups } = useGroup();
+  const { selectedGroup, userRole, refreshAllGroups } = useGroup();
   const [state, action, isPending] = useActionState(inviteMember, undefined);
 
   useEffect(() => {
@@ -41,8 +41,16 @@ export default function MemberDrawer() {
         <form action={action}>
           <FieldGroup className="px-4">
             <Field className="hidden">
-              <Input name="groupId" type="text" defaultValue={group?.groupId} />
-              <Input name="userRole" type="text" defaultValue={userRole ? userRole : ''} />
+              <Input
+                name="groupId"
+                type="text"
+                defaultValue={selectedGroup ? selectedGroup : ""}
+              />
+              <Input
+                name="userRole"
+                type="text"
+                defaultValue={userRole ? userRole : ""}
+              />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>

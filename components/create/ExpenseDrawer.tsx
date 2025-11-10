@@ -4,7 +4,7 @@ import { useGroup } from "@/contexts/groupContext";
 import { Button } from "../ui/button";
 import { DatePicker } from "../ui/datePicker";
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "../ui/drawer";
-import { Field, FieldGroup, FieldLabel } from "../ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -14,13 +14,22 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { addExpense } from "@/actions/expense";
+import { Spinner } from "../ui/spinner";
+import { showToast } from "@/lib/utils/showToast";
+import { useExpense } from "@/contexts/expenseContext";
+import { StatusType } from "@/lib/types";
 
 export default function ExpenseDrawer () {
-  const { group } = useGroup();
-  const [state, action, isPending] = useActionState(addExpense, undefined)
+  const { selectedGroup } = useGroup();
+  const { refreshAllExpenses} = useExpense();
+  const [state, action, isPending] = useActionState(addExpense, undefined);
 
+  useEffect(() => {
+    if (state?.message) showToast(state.message, state?.status);
+    if (state?.status == StatusType.SUCCESS) refreshAllExpenses();
+  }, [state]);
 
   return (
     <Drawer>
@@ -31,71 +40,129 @@ export default function ExpenseDrawer () {
         <DrawerHeader>
           <DrawerTitle>Add New Expense</DrawerTitle>
         </DrawerHeader>
-        <FieldGroup className="px-4">
-          <Field>
-            <FieldLabel htmlFor="title">title</FieldLabel>
-            <Input id="title" type="text" placeholder="Hotel Rent..." />
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field>
-              <FieldLabel htmlFor="amount">amount</FieldLabel>
-              <Input id="amount" type="number" placeholder="0,00.00" />
+        <form action={action}>
+          <FieldGroup className="px-4">
+            <Field className="hidden">
+              <Input
+                name="groupId"
+                type="text"
+                defaultValue={selectedGroup ? selectedGroup : ""}
+              />
             </Field>
             <Field>
-              <FieldLabel htmlFor="date">date</FieldLabel>
-              <DatePicker id="date" />
+              <FieldLabel htmlFor="title">title</FieldLabel>
+              <Input
+                id="title"
+                name="title"
+                type="text"
+                placeholder="Hotel Rent..."
+                defaultValue={
+                  typeof state?.title === "string" ? state.title : ""
+                }
+                aria-invalid={state?.errors?.title ? true : false}
+              />
+              {state?.errors?.title && (
+                <FieldError>{state.errors.title}</FieldError>
+              )}
             </Field>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              <Field>
+                <FieldLabel htmlFor="amount">amount</FieldLabel>
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="text"
+                  placeholder="0,00.00"
+                  defaultValue={
+                    typeof state?.amount === "string" ? state.amount : ""
+                  }
+                  aria-invalid={state?.errors?.amount ? true : false}
+                />
+                {state?.errors?.amount && (
+                  <FieldError>{state.errors.amount}</FieldError>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="date">date</FieldLabel>
+                <DatePicker
+                  id="date"
+                  name="date"
+                  defaultValue={
+                    typeof state?.date === "string" ? state.date : ""
+                  }
+                  isInvalid={state?.errors?.date ? true : false}
+                />
+                {state?.errors?.date && (
+                  <FieldError>{state.errors.date}</FieldError>
+                )}
+              </Field>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field>
+                <FieldLabel htmlFor="receipt">receipt</FieldLabel>
+                <Input
+                  id="receipt"
+                  name="receipt"
+                  type="file"
+                  accept=".jpg,.jpeg"
+                />
+                {state?.errors?.receipt && (
+                  <FieldError>{state.errors.receipt}</FieldError>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="split">Split Method</FieldLabel>
+                <Select
+                  name="split"
+                  defaultValue={
+                    typeof state?.split === "string" ? state.split : "equal"
+                  }
+                  aria-invalid={state?.errors?.split ? true : false}
+                >
+                  <SelectTrigger id="split">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="equal">Equal</SelectItem>
+                    <SelectItem value="exact">Exact</SelectItem>
+                    <SelectItem value="percentage">Percentage</SelectItem>
+                  </SelectContent>
+                </Select>
+                {state?.errors?.split && (
+                  <FieldError>{state.errors.split}</FieldError>
+                )}
+              </Field>
+            </div>
             <Field>
-              <FieldLabel htmlFor="receipt">receipt</FieldLabel>
-              <Input id="receipt" type="file" />
+              <FieldLabel htmlFor="notes">notes</FieldLabel>
+              <Textarea
+                name="notes"
+                id="notes"
+                placeholder="any additional notes..."
+                className="resize-none"
+                defaultValue={
+                  typeof state?.notes === "string" ? state.notes : ""
+                }
+                aria-invalid={state?.errors?.notes ? true : false}
+              />
+              {state?.errors?.notes && (
+                <FieldError>{state.errors.notes}</FieldError>
+              )}
             </Field>
-            <Field>
-              <FieldLabel htmlFor="split">Split Method</FieldLabel>
-              <Select defaultValue="equal">
-                <SelectTrigger id="split">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="equal">Equal</SelectItem>
-                  <SelectItem value="exact">Exact</SelectItem>
-                  <SelectItem value="percentage">Percentage</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
-          </div>
-          <Field>
-            <FieldLabel htmlFor="notes">notes</FieldLabel>
-            <Textarea
-              name="description"
-              id="notes"
-              placeholder="any additional notes..."
-              className="resize-none"
-              //  defaultValue={
-              //    typeof state?.description === "string"
-              //      ? state.description
-              //      : group?.description
-              //  }
-              //  aria-invalid={state?.errors?.description ? true : false}
-            />
-            {/* {state?.errors?.description && (
-                 <FieldError>{state.errors.description}</FieldError>
-               )} */}
-          </Field>
-        </FieldGroup>
-        <DrawerFooter>
-          {/* <DrawerClose asChild>
-               <Button disabled={isPending} type="submit" className="w-full">
-                 {isPending ? <Spinner /> : ""}Add
-               </Button>
-             </DrawerClose> */}
-          <DrawerClose asChild>
-            <Button variant="outline" className="w-full">
-              Cancel
-            </Button>
-          </DrawerClose>
-        </DrawerFooter>
+          </FieldGroup>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button disabled={isPending} type="submit" className="w-full">
+                {isPending ? <Spinner /> : ""}Add
+              </Button>
+            </DrawerClose>
+            <DrawerClose asChild>
+              <Button variant="outline" className="w-full">
+                Cancel
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </form>
       </DrawerContent>
     </Drawer>
   );

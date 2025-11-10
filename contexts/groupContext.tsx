@@ -7,6 +7,7 @@ import {AllGroupType, GroupType, RoleType, InvitationType, GroupMemberType } fro
 import { clearMember } from "@/actions/invite";
 
 interface GroupContextType {
+  selectedGroup: string | null;
   group: GroupType | null;
   invitations: InvitationType[] | null;
   allGroups: AllGroupType[] | null;
@@ -30,19 +31,19 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     InvitationType[]
   >("/api/invite", fetcher);
   // API CALL: all memberships group
-  const { data: allGroups, mutate: mutateAllGroups } = useSWR<
-    AllGroupType[]
-  >("/api/groups", fetcher);
+  const { data: allGroups, mutate: mutateAllGroups } = useSWR<AllGroupType[]>(
+    "/api/groups",
+    fetcher
+  );
   // API CALL: selected group information
   const { data: group, mutate: mutateGroup } = useSWR<GroupType>(
     selectedGroupId ? `/api/groups/${selectedGroupId}` : null,
     fetcher
   );
   // API CALL: selected group members
-  const { data: groupMembers, mutate: mutateMembers } = useSWR<GroupMemberType[]>(
-    selectedGroupId ? `/api/memberships/${selectedGroupId}` : null,
-    fetcher
-  );
+  const { data: groupMembers, mutate: mutateMembers } = useSWR<
+    GroupMemberType[]
+  >(selectedGroupId ? `/api/memberships/${selectedGroupId}` : null, fetcher);
 
   // SET: user role for selected group
   const userRole =
@@ -66,7 +67,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
           await clearMember(item.invitedId);
           break;
         }
-        if (item.status == "pending"){
+        if (item.status == "pending") {
           updatedInvitation.push({
             ...item,
             expiresAt: diffDays,
@@ -85,8 +86,11 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     mutateInvitations(undefined, { revalidate: true });
   const refreshAllGroups = () =>
     mutateAllGroups(undefined, { revalidate: true });
-  const refreshGroupMember = () => mutateMembers(undefined, {revalidate: true})
+  const refreshGroupMember = () =>
+    mutateMembers(undefined, { revalidate: true });
+
   const value = {
+    selectedGroup: selectedGroupId,
     group: group || null,
     invitations: invitations,
     allGroups: allGroups || null,

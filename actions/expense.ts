@@ -2,17 +2,21 @@
 
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { GroupState, StatusType } from "@/lib/types";
+import { ExpenseState, StatusType } from "@/lib/types";
 import { imageToBase64 } from "@/lib/utils/imageConvert";
-import { GroupSchema } from "@/lib/validation";
+import { ExpenseSchema } from "@/lib/validation";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
 
-export async function addExpense(state: GroupState | undefined, formData: FormData): Promise<GroupState | undefined> {
-  const validatedFields = GroupSchema.safeParse({
-    name: formData.get("name"),
-    currency: formData.get("currency"),
+export async function addExpense(state: ExpenseState | undefined, formData: FormData): Promise<ExpenseState | undefined> {
+  const validatedFields = ExpenseSchema.safeParse({
+    groupId: formData.get("groupId"),
+    title: formData.get("title"),
+    amount: formData.get("amount"),
+    date: formData.get("date"),
     split: formData.get("split"),
+    notes: formData.get("notes"),
+    receipt: formData.get("receipt"),
   });
 
   if (!validatedFields.success) {
@@ -20,77 +24,73 @@ export async function addExpense(state: GroupState | undefined, formData: FormDa
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Please Enter Information Correctly",
       status: StatusType.INFO,
-      name: formData.get("name"),
-      currency: formData.get("currency"),
+      title: formData.get("title"),
+      amount: formData.get("amount"),
+      date: formData.get("date"),
       split: formData.get("split"),
+      notes: formData.get("notes"),
+      receipt: formData.get("receipt"),
     };
   }
 
-  const { name, currency, split } = validatedFields.data;
   const user = await getUser();
   if (!user) redirect("/login");
 
-  const groupCollection = await getCollection("groups");
-  if (!groupCollection)
+  const { groupId, title, amount, date, split, notes, receipt } = validatedFields.data;
+  let data;
+
+  if (receipt?.size > 0) {
+    const convertImage = await imageToBase64(receipt);
+    data = {
+      payerId: new ObjectId(user.userId),
+      groupId: new ObjectId(groupId),
+      createdAt: new Date(),
+      title,
+      amount,
+      date,
+      split,
+      notes,
+      receipt: convertImage,
+    };
+  } else {
+    data = {
+      payerId: new ObjectId(user.userId),
+      groupId: new ObjectId(groupId),
+      createdAt: new Date(),
+      title,
+      amount,
+      date,
+      split,
+      notes,
+    };
+  }
+
+  const expenseCollection = await getCollection("expenses");
+  if (!expenseCollection)
     return {
       message: "Server Error!",
       status: StatusType.ERROR,
-      name,
-      currency,
-      split,
-    };
+      title: formData.get("title"),
+      amount: formData.get("amount"),
+      date: formData.get("date"),
+      split: formData.get("split"),
+      notes: formData.get("notes"),
+      receipt: formData.get("receipt"),
+    }
 
-  const existingGroup = await groupCollection.findOne({
-    name,
-    ownerId: new ObjectId(user.userId),
-  });
-  if (existingGroup)
+  const expense = await expenseCollection.insertOne(data);
+
+  if (!expense.acknowledged)
     return {
-      errors: { name: ["try with another name"] },
-      message: "The Group Already Exists",
-      status: StatusType.WARNING,
-      currency,
-      split,
-    };
-
-  const group = await groupCollection.insertOne({
-    createdAt: new Date(),
-    name,
-    ownerId: new ObjectId(user.userId),
-    settings: {
-      currency,
-      defaultSplit: split,
-    },
-  });
-
-  if (!group.acknowledged)
-    return {
-      message: "An Error Occurred While Creating Group",
+      message: "An Error Occurred While Adding Expense",
       status: StatusType.ERROR,
-      name,
-      currency,
-      split,
+      title: formData.get("title"),
+      amount: formData.get("amount"),
+      date: formData.get("date"),
+      split: formData.get("split"),
+      notes: formData.get("notes"),
+      receipt: formData.get("receipt"),
     };
 
-  const membershipCollection = await getCollection("memberships");
-  if (!membershipCollection)
-    return {
-      message: "Membership Collection Error",
-      status: StatusType.ERROR,
-    };
-
-  const membership = await membershipCollection.insertOne({
-    joinedAt: new Date(),
-    groupId: group.insertedId,
-    userId: new ObjectId(user.userId),
-    role: "admin",
-  });
-
-  if (!membership.acknowledged)
-    return {
-      message: "An Error Occurred While Creating Membership",
-      status: StatusType.ERROR,
-    };
-
-  return { message: "Successfully Create Group", status: StatusType.SUCCESS };
+  return { message: "Successfully Added Expense", status: StatusType.SUCCESS };
 }

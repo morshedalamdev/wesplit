@@ -1,5 +1,6 @@
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
+import formatDate from "@/lib/utils/formatDate";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
@@ -33,7 +34,7 @@ export async function GET(){
     groupId: item.groupId.toString(),
     name: item.group.name,
     role: item.role,
-    joinedAt: item.joinedAt?.toLocaleDateString(),
+    joinedAt: formatDate(item.joinedAt),
     groupAvatar: item.group?.groupAvatar,
   }));
 
