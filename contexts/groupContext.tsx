@@ -3,17 +3,19 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
-import {MembershipType, GroupType, RoleType, InvitationType } from "@/lib/types";
+import {AllGroupType, GroupType, RoleType, InvitationType, GroupMemberType } from "@/lib/types";
 import { clear } from "@/actions/invite";
 
 interface GroupContextType {
   group: GroupType | null;
   invitations: InvitationType[] | null;
-  memberships: MembershipType[] | null;
+  allGroups: AllGroupType[] | null;
   userRole: RoleType | null;
-  refreshMemberships: () => void;
+  groupMembers: GroupMemberType[] | null;
+  refreshAllGroups: () => void;
   refreshInvitation: () => void;
   refreshGroup: () => void;
+  refreshGroupMember: () => void;
   selectGroup: (id: string | null) => void;
 }
 
@@ -28,19 +30,24 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     InvitationType[]
   >("/api/invite", fetcher);
   // API CALL: all memberships group
-  const { data: memberships, mutate: mutateMemberships } = useSWR<
-    MembershipType[]
+  const { data: allGroups, mutate: mutateAllGroups } = useSWR<
+    AllGroupType[]
   >("/api/groups", fetcher);
   // API CALL: selected group information
   const { data: group, mutate: mutateGroup } = useSWR<GroupType>(
     selectedGroupId ? `/api/groups/${selectedGroupId}` : null,
     fetcher
   );
+  // API CALL: selected group members
+  const { data: groupMembers, mutate: mutateMembers } = useSWR<GroupMemberType[]>(
+    selectedGroupId ? `/api/membership/${selectedGroupId}` : null,
+    fetcher
+  );
 
   // SET: user role for selected group
   const userRole =
-    selectedGroupId && memberships
-      ? memberships.find((g) => g.groupId == selectedGroupId)?.role || null
+    selectedGroupId && allGroups
+      ? allGroups.find((g) => g.groupId == selectedGroupId)?.role || null
       : null;
 
   useEffect(() => {
@@ -57,7 +64,9 @@ export function GroupProvider({ children }: { children: ReactNode }) {
         if (diffDays < -1 && item.status == "pending") {
           // clear the invitation if it expires
           await clear(item.inviteId);
-        } else {
+          break;
+        }
+        if (item.status == "pending"){
           updatedInvitation.push({
             ...item,
             expiresAt: diffDays,
@@ -74,16 +83,19 @@ export function GroupProvider({ children }: { children: ReactNode }) {
   const refreshGroup = () => mutateGroup(undefined, { revalidate: true });
   const refreshInvitation = () =>
     mutateInvitations(undefined, { revalidate: true });
-  const refreshMemberships = () =>
-    mutateMemberships(undefined, { revalidate: true });
+  const refreshAllGroups = () =>
+    mutateAllGroups(undefined, { revalidate: true });
+  const refreshGroupMember = () => mutateMembers(undefined, {revalidate: true})
   const value = {
     group: group || null,
     invitations: invitations,
-    memberships: memberships || null,
+    allGroups: allGroups || null,
     userRole: userRole as RoleType | null,
+    groupMembers: groupMembers || null,
     refreshGroup,
     refreshInvitation,
-    refreshMemberships,
+    refreshAllGroups,
+    refreshGroupMember,
     selectGroup: setSelectedGroupId,
   };
   return (

@@ -10,10 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGroup } from "@/contexts/groupContext";
-import { InvitationType, MembershipType } from "@/lib/types";
+import { InvitationType, AllGroupType } from "@/lib/types";
 
 export default function Page() {
-  const { memberships, invitations, refreshInvitation, refreshMemberships } = useGroup();
+  const { allGroups, invitations, refreshInvitation, refreshAllGroups } = useGroup();
 
   const handleRejection = async (id: string) => {
     await clear(id);
@@ -22,7 +22,7 @@ export default function Page() {
   const handleAcceptation = async (inviteId: string, groupId: string, role: string) =>{
     await accept(inviteId, groupId, role);
     refreshInvitation();
-    refreshMemberships();
+    refreshAllGroups();
   }
   return (
     <section className="flex flex-col gap-3">
@@ -41,7 +41,7 @@ export default function Page() {
         </div>
       </div>
       <div className="x-bg-glass-dark basis-0 grow">
-        {memberships && memberships?.length > 0 ? (
+        {allGroups && allGroups?.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow>
@@ -52,7 +52,7 @@ export default function Page() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {memberships.map((g: MembershipType) => (
+              {allGroups.map((g: AllGroupType) => (
                 <TableRow key={g.groupId}>
                   <TableCell>{g.name}</TableCell>
                   <TableCell>{g.role}</TableCell>
