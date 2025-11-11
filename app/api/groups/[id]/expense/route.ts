@@ -40,6 +40,7 @@ export async function GET(
     expenseId: item._id.toString(),
     groupId: item.groupId.toString(),
     payer: item.user.name,
+    payerId: item.payerId,
     title: item.title,
     amount: item.amount,
     split: item.split,

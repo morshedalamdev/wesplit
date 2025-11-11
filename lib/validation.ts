@@ -111,6 +111,8 @@ export const MemberUpdateSchema = z.object({
 
 export const ExpenseSchema = z.object({
   groupId: z.string().trim().optional(),
+  expenseId: z.string().trim().optional(),
+  payerId: z.string().trim().optional(),
   title: z
     .string()
     .min(3, { message: "Title must be at least 3 characters long." })

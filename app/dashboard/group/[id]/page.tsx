@@ -108,10 +108,10 @@ export default function Group() {
             </TableHeader>
             <TableBody>
               {allExpenses.map((e: ExpenseType, index: number) => (
-                <TableRow>
+                <TableRow key={e.expenseId}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{e.title}</TableCell>
-                  <TableCell>{e.amount}</TableCell>
+                  <TableCell>{e.amount}/-</TableCell>
                   <TableCell>{e.payer}</TableCell>
                   <TableCell>{e.date}</TableCell>
                 </TableRow>

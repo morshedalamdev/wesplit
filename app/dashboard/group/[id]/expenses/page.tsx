@@ -1,6 +1,9 @@
 "use client";
 
+import { deleteExpense } from "@/actions/expense";
 import ExpenseDrawer from "@/components/create/ExpenseDrawer";
+import EditExpense from "@/components/edit/EditExpense";
+import ExpenseView from "@/components/ExpenseView";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -11,12 +14,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useExpense } from "@/contexts/expenseContext";
-import { ExpenseType } from "@/lib/types";
+import { useGroup } from "@/contexts/groupContext";
+import { useUser } from "@/contexts/userContext";
+import { ExpenseType, StatusType } from "@/lib/types";
+import { showToast } from "@/lib/utils/showToast";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 
 export default function Expenses() {
-  const { allExpenses } = useExpense();
+  const { userData } = useUser();
+  const { userRole } = useGroup();
+  const { allExpenses, refreshAllExpenses } = useExpense();
+
+  const handleDelete = async (expenseId: string, payerId: string) => {
+    const result = await deleteExpense(expenseId, payerId, userRole);
+    if (result?.message) showToast(result.message, result?.status);
+    if (result?.status == StatusType.SUCCESS) refreshAllExpenses();
+  };
 
   return (
     <div className="x-bg-glass-dark">
@@ -34,8 +48,8 @@ export default function Expenses() {
                 <TableHead>Sl</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Payer</TableHead>
                 <TableHead>Method</TableHead>
+                <TableHead>Payer</TableHead>
                 <TableHead>Receipt</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="w-24">Action</TableHead>
@@ -46,7 +60,7 @@ export default function Expenses() {
                 <TableRow key={e.expenseId}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{e.title}</TableCell>
-                  <TableCell>{e.amount}</TableCell>
+                  <TableCell>{e.amount}/-</TableCell>
                   <TableCell className="capitalize">{e.split}</TableCell>
                   <TableCell>{e.payer}</TableCell>
                   <TableCell>
@@ -64,16 +78,22 @@ export default function Expenses() {
                   <TableCell>{e.date}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <button className="text-green-500">View</button>|
-                      <button className="text-amber-500">Edit</button>|
-                      <button className="text-red-500">Delete</button>
+                      <ExpenseView data={e} />|
+                      {userData?.userId == e.payerId ? (
+                        <>
+                          <EditExpense data={e} /> |
+                        </>
+                      ) : (
+                        ""
+                      )}
+                      <button onClick={()=>handleDelete(e.expenseId, e.payerId)} className="text-red-500">Delete</button>
                     </div>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          <div className="flex items-center justify-between p-2 border-t border-gray-200">
+          {/* <div className="flex items-center justify-between p-2 border-t border-gray-200">
             <p className="text-muted-foreground">1-20 expenses are showing</p>
             <div className="flex items-center gap-1">
               <Button
@@ -91,7 +111,7 @@ export default function Expenses() {
                 <ArrowRight />
               </Button>
             </div>
-          </div>
+          </div> */}
         </>
       ) : (
         <p className="text-center p-2">No Expenses in List</p>

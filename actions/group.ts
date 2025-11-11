@@ -179,13 +179,13 @@ export async function updateGroup(
 }
 
 export async function deleteGroup(
-  id: string | undefined,
+  membershipId: string | undefined,
   role: string | null
 ): Promise<{ message: string; status: StatusType } | undefined> {
   const user = await getUser();
   if (!user) redirect("/login");
 
-  if (!id) return { message: "Group Not Found", status: StatusType.ERROR };
+  if (!membershipId) return { message: "Group Not Found", status: StatusType.ERROR };
   if (role != "admin")
     return {
       message: "Not Authorized for This Action",
@@ -198,7 +198,7 @@ export async function deleteGroup(
       message: "Server Error!",
       status: StatusType.ERROR,
     };
-  await groupCollection?.findOneAndDelete({ _id: new ObjectId(id) });
+  await groupCollection?.findOneAndDelete({ _id: new ObjectId(membershipId) });
   
   return {
     message: "Successfully Deleted The Group",

@@ -156,6 +156,7 @@ export interface ExpenseType {
   expenseId: string;
   groupId: string;
   payer: string;
+  payerId: string;
   title: string;
   amount: string;
   split: string;
