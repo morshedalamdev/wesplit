@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { UserProvider } from "@/contexts/userContext";
 import { GroupProvider } from "@/contexts/groupContext";
+import { ExpenseProvider } from "@/contexts/expenseContext";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -25,8 +26,10 @@ export default function RootLayout({
       <body className={`${roboto.variable} antialiased`}>
         <UserProvider>
           <GroupProvider>
-            {children}
-            <Toaster />
+            <ExpenseProvider>
+              {children}
+              <Toaster />
+            </ExpenseProvider>
           </GroupProvider>
         </UserProvider>
       </body>

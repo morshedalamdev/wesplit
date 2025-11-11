@@ -6,35 +6,22 @@ import { CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-
-function formatDate(date: Date | undefined) {
-  if (!date) {
-    return ""
-  }
-
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  })
-}
+} from "@/components/ui/popover";
+import formatDate from "@/lib/utils/formatDate"
 
 function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false
-  }
-  return !isNaN(date.getTime())
+  return !!date && !isNaN(date.getTime());
 }
 
-export function DatePicker({id}: {id?: string}) {
+export function DatePicker({id, name, defaultValue, isInvalid}: {id?: string, name?: string, defaultValue?: string, isInvalid?: boolean}) {
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>(
+    defaultValue ? new Date(defaultValue) : new Date()
+  );
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
 
@@ -42,15 +29,17 @@ export function DatePicker({id}: {id?: string}) {
     <div className="relative flex gap-2">
       <Input
         id={id}
+        name={name}
         value={value}
+        aria-invalid={isInvalid}
         placeholder="June 01, 2025"
         className="bg-background pr-10"
         onChange={(e) => {
-          const date = new Date(e.target.value);
+          const newDate = new Date(e.target.value);
           setValue(e.target.value);
-          if (isValidDate(date)) {
-            setDate(date);
-            setMonth(date);
+          if (isValidDate(newDate)) {
+            setDate(newDate);
+            setMonth(newDate);
           }
         }}
         onKeyDown={(e) => {
@@ -60,6 +49,14 @@ export function DatePicker({id}: {id?: string}) {
           }
         }}
       />
+      {/* hidden but actual data input */}
+      {name && (
+        <input
+          type="hidden"
+          name={name}
+          value={date ? date.toISOString() : ""}
+        />
+      )}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

@@ -16,7 +16,7 @@ export async function GET(){
   const data = await userCollection.findOne({ _id: new ObjectId(user.userId) });
 
   return NextResponse.json({
-    id: data?._id?.toString(),
+    userId: data?._id?.toString(),
     name: data?.name,
     email: data?.email,
     phone: data?.phone,

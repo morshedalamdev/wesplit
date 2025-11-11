@@ -14,15 +14,15 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useGroup } from "@/contexts/groupContext";
-import { ReactNode, useActionState, useEffect } from "react";
+import { useActionState, useEffect } from "react";
 import { showToast } from "@/lib/utils/showToast";
 import { Spinner } from "../ui/spinner";
 import { GroupMemberType, StatusType } from "@/lib/types";
-import { update } from "@/actions/membership";
+import { updateMember } from "@/actions/membership";
 
-export default function EditMemberDrawer ({ children, data }: { children: ReactNode, data: GroupMemberType }) {
+export default function EditMember ({ data }: { data: GroupMemberType }) {
   const { userRole, refreshGroupMember } = useGroup();
-  const [state, action, isPending] = useActionState(update, undefined);
+  const [state, action, isPending] = useActionState(updateMember, undefined);
 
   useEffect(() => {
     if (state?.message) showToast(state.message, state?.status);
@@ -31,7 +31,9 @@ export default function EditMemberDrawer ({ children, data }: { children: ReactN
 
   return (
     <Drawer>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+      <DrawerTrigger asChild>
+        <button className="text-amber-500">Edit</button>
+      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Update Member</DrawerTitle>

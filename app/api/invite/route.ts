@@ -1,5 +1,6 @@
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
+import formatDate from "@/lib/utils/formatDate";
 import { NextResponse } from "next/server";
 
 export async function GET(){
@@ -38,13 +39,13 @@ export async function GET(){
   if (!invitations) return NextResponse.json(null);
 
   const plainData = invitations.map((item) => ({
-    inviteId: item._id.toString(),
+    invitedId: item._id.toString(),
     groupId: item.groupId.toString(),
     groupName: item.group.name,
     invitedBy: item.user.name,
     role: item.role,
     status: item.status,
-    createdAt: item.createdAt.toLocaleDateString(),
+    createdAt: formatDate(item.createdAt),
     expiresAt: item.expiresAt.toLocaleDateString(),
   }));
 

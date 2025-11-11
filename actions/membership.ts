@@ -2,14 +2,14 @@
 
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { MemberUpdateState, StatusType } from "@/lib/types";
+import { MemberState, StatusType } from "@/lib/types";
 import { MemberUpdateSchema } from "@/lib/validation";
 import { ObjectId } from "mongodb";
 import { redirect } from "next/navigation";
 
-export async function update(state: MemberUpdateState | undefined, formData: FormData):Promise<MemberUpdateState | undefined>{
+export async function updateMember(state: MemberState | undefined, formData: FormData):Promise<MemberState | undefined>{
   const validatedFields = MemberUpdateSchema.safeParse({
-    id: formData.get("membershipId"),
+    membershipId: formData.get("membershipId"),
     userRole: formData.get("userRole"),
     role: formData.get("role"),
   });
@@ -23,9 +23,9 @@ export async function update(state: MemberUpdateState | undefined, formData: For
     };
   }
 
-  const { id, userRole, role } = validatedFields.data;
+  const { membershipId, userRole, role } = validatedFields.data;
 
-  if (!id) redirect("/dashboard");
+  if (!membershipId) redirect("/dashboard");
 
   const user = await getUser();
   if (!user) redirect("/login");
@@ -43,7 +43,7 @@ export async function update(state: MemberUpdateState | undefined, formData: For
     };
 
   membershipCollection.findOneAndUpdate(
-    { _id: new ObjectId(id) },
+    { _id: new ObjectId(membershipId) },
     { $set: {role} }
   );
 
@@ -54,18 +54,18 @@ export async function update(state: MemberUpdateState | undefined, formData: For
 }
 
 export async function deleteMember(
-  id: string | undefined,
-  role: string | null
+  membershipId: string | undefined,
+  userRole: string | null
 ): Promise<{ message: string; status: StatusType } | undefined> {
   const user = await getUser();
   if (!user) redirect("/login");
 
-  if (!id)
+  if (!membershipId)
     return {
       message: "Member not Found in Database",
       status: StatusType.ERROR,
     };
-  if (role != "admin")
+  if (userRole != "admin")
     return {
       message: "Not Authorized for This Action",
       status: StatusType.WARNING,
@@ -77,7 +77,7 @@ export async function deleteMember(
       message: "Server Error!",
       status: StatusType.ERROR,
     };
-  await membershipCollection?.findOneAndDelete({ _id: new ObjectId(id) });
+  await membershipCollection?.findOneAndDelete({ _id: new ObjectId(membershipId) });
 
   return {
     message: "Successfully Deleted The Group",

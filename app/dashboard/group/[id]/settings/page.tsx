@@ -41,9 +41,9 @@ export default function Settings () {
       <FieldGroup>
         <FieldGroup className="px-4">
           <Field className="hidden">
-            <Input name="id" type="text" defaultValue={group?.groupId} />
+            <Input name="groupId" type="text" defaultValue={group?.groupId} />
             <Input
-              name="role"
+              name="userRole"
               type="text"
               defaultValue={userRole ? userRole : ""}
             />

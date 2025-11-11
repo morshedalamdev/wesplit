@@ -4,15 +4,16 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
-import { InviteState, StatusType } from "@/lib/types";
+import { MemberState, StatusType } from "@/lib/types";
 import { InviteSchema } from "@/lib/validation";
 import { redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
-export async function invite(state: InviteState | undefined, formData: FormData): Promise<InviteState | undefined>{
+export async function inviteMember(state: MemberState | undefined, formData: FormData): Promise<MemberState | undefined>{
   const validatedFields = InviteSchema.safeParse({
-    id: formData.get("id"),
+    groupId: formData.get("id"),
+    userRole: formData.get("userRole"),
     email: formData.get("email"),
     role: formData.get("role"),
   });
@@ -26,12 +27,17 @@ export async function invite(state: InviteState | undefined, formData: FormData)
     };
   }
 
-  const { id, email, role } = validatedFields.data;
+  const { groupId, userRole, email, role } = validatedFields.data;
 
-  if (!id) redirect("/dashboard");
+  if (!groupId) redirect("/dashboard");
 
   const user = await getUser();
   if (!user) redirect("/login");
+  if (userRole != "admin")
+    return {
+      message: "Not Authorized for This Action",
+      status: StatusType.WARNING,
+    };
 
   const inviteCollection = await getCollection("invites");
   if (!inviteCollection)
@@ -42,7 +48,7 @@ export async function invite(state: InviteState | undefined, formData: FormData)
 
   const existing = await inviteCollection.findOne({
     email,
-    groupId: new ObjectId(id),
+    groupId: new ObjectId(groupId),
   });
   if (existing)
     return {
@@ -58,7 +64,7 @@ export async function invite(state: InviteState | undefined, formData: FormData)
   const result = await inviteCollection.insertOne({
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    groupId: new ObjectId(id),
+    groupId: new ObjectId(groupId),
     invitedBy: new ObjectId(user.userId),
     token: hashedText,
     email,
@@ -79,19 +85,19 @@ export async function invite(state: InviteState | undefined, formData: FormData)
   };
 }
 
-export async function clear(id: string):Promise<void>{
+export async function clearMember(invitedId: string):Promise<void>{
   const user = await getUser();
   if (!user) redirect("/login");
   
   const inviteCollection = await getCollection("invites");
   if (!inviteCollection) revalidatePath("/dashboard");
 
-  await inviteCollection?.findOneAndDelete({ _id: new ObjectId(id) });
+  await inviteCollection?.findOneAndDelete({ _id: new ObjectId(invitedId) });
   revalidatePath("/dashboard");
 }
 
-export async function accept(
-  inviteId: string,
+export async function acceptMember(
+  invitedId: string,
   groupId: string,
   role: string
 ): Promise<void> {
@@ -111,9 +117,9 @@ export async function accept(
     role,
   });
 
-  if(membership?.acknowledged){
+  if (membership?.acknowledged) {
     inviteCollection?.findOneAndUpdate(
-      { _id: new ObjectId(inviteId) },
+      { _id: new ObjectId(invitedId) },
       {
         $set: {
           status: "accepted",

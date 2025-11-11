@@ -1,9 +1,15 @@
 "use client";
 
-import { useGroup } from "@/contexts/groupContext";
-import { Button } from "../ui/button";
-import { DatePicker } from "../ui/datePicker";
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "../ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import {
@@ -13,18 +19,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Textarea } from "../ui/textarea";
 import { useActionState, useEffect } from "react";
-import { addExpense } from "@/actions/expense";
-import { Spinner } from "../ui/spinner";
 import { showToast } from "@/lib/utils/showToast";
+import { Spinner } from "../ui/spinner";
+import { ExpenseType, StatusType } from "@/lib/types";
+import { updateExpense } from "@/actions/expense";
+import { Textarea } from "../ui/textarea";
+import { DatePicker } from "../ui/datePicker";
 import { useExpense } from "@/contexts/expenseContext";
-import { StatusType } from "@/lib/types";
+import Image from "next/image";
 
-export default function ExpenseDrawer () {
-  const { selectedGroup } = useGroup();
-  const { refreshAllExpenses} = useExpense();
-  const [state, action, isPending] = useActionState(addExpense, undefined);
+export default function EditExpense ({ data }: { data: ExpenseType }) {
+  const { refreshAllExpenses } = useExpense();
+  const [state, action, isPending] = useActionState(updateExpense, undefined);
 
   useEffect(() => {
     if (state?.message) showToast(state.message, state?.status);
@@ -34,20 +41,21 @@ export default function ExpenseDrawer () {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button>Add New Expense</Button>
+        <button className="text-amber-500">Edit</button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Add New Expense</DrawerTitle>
+          <DrawerTitle>Update Expense</DrawerTitle>
         </DrawerHeader>
         <form action={action}>
           <FieldGroup className="px-4">
             <Field className="hidden">
               <Input
-                name="groupId"
+                name="expenseId"
                 type="text"
-                defaultValue={selectedGroup ? selectedGroup : ""}
+                defaultValue={data.expenseId}
               />
+              <Input name="payerId" type="text" defaultValue={data.payerId} />
             </Field>
             <Field>
               <FieldLabel htmlFor="title">title</FieldLabel>
@@ -57,7 +65,7 @@ export default function ExpenseDrawer () {
                 type="text"
                 placeholder="Hotel Rent..."
                 defaultValue={
-                  typeof state?.title === "string" ? state.title : ""
+                  typeof state?.title === "string" ? state.title : data.title
                 }
                 aria-invalid={state?.errors?.title ? true : false}
               />
@@ -74,7 +82,9 @@ export default function ExpenseDrawer () {
                   type="text"
                   placeholder="0,00.00"
                   defaultValue={
-                    typeof state?.amount === "string" ? state.amount : ""
+                    typeof state?.amount === "string"
+                      ? state.amount
+                      : data.amount
                   }
                   aria-invalid={state?.errors?.amount ? true : false}
                 />
@@ -88,7 +98,7 @@ export default function ExpenseDrawer () {
                   id="date"
                   name="date"
                   defaultValue={
-                    typeof state?.date === "string" ? state.date : ""
+                    typeof state?.date === "string" ? state.date : data.date
                   }
                   isInvalid={state?.errors?.date ? true : false}
                 />
@@ -109,13 +119,22 @@ export default function ExpenseDrawer () {
                 {state?.errors?.receipt && (
                   <FieldError>{state.errors.receipt}</FieldError>
                 )}
+                {data?.receipt && (
+                  <Image
+                    src={`data:image/jpeg;base64,${data.receipt}`}
+                    alt={data.title}
+                    width={24}
+                    height={80}
+                    className="object-cover"
+                  />
+                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="split">Split Method</FieldLabel>
                 <Select
                   name="split"
                   defaultValue={
-                    typeof state?.split === "string" ? state.split : "equal"
+                    typeof state?.split === "string" ? state.split : data.split
                   }
                   aria-invalid={state?.errors?.split ? true : false}
                 >
@@ -141,7 +160,7 @@ export default function ExpenseDrawer () {
                 placeholder="any additional notes..."
                 className="resize-none"
                 defaultValue={
-                  typeof state?.notes === "string" ? state.notes : ""
+                  typeof state?.notes === "string" ? state.notes : data?.notes
                 }
                 aria-invalid={state?.errors?.notes ? true : false}
               />
@@ -153,7 +172,7 @@ export default function ExpenseDrawer () {
           <DrawerFooter>
             <DrawerClose asChild>
               <Button disabled={isPending} type="submit" className="w-full">
-                {isPending ? <Spinner /> : ""}Add
+                {isPending ? <Spinner /> : ""}Update
               </Button>
             </DrawerClose>
             <DrawerClose asChild>

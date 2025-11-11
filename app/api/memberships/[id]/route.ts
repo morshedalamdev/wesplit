@@ -1,5 +1,6 @@
 import { getUser } from "@/lib/dal";
 import { getCollection } from "@/lib/db";
+import formatDate from "@/lib/utils/formatDate";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
@@ -35,12 +36,12 @@ export async function GET(
   if (!members) return NextResponse.json(null);
   
 const plainData = members.map((item) => ({
-    membershipId: item._id.toString(),
-    memberId: item.userId.toString(),
-    name: item.user.name,
-    role: item.role,
-    joinedAt: item.joinedAt?.toLocaleDateString(),
-  }));
+  membershipId: item._id.toString(),
+  memberId: item.userId.toString(),
+  name: item.user.name,
+  role: item.role,
+  joinedAt: formatDate(item.joinedAt),
+}));
 
   return NextResponse.json(plainData);
 }

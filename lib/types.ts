@@ -1,3 +1,4 @@
+// FOR: TOASTER
 export enum StatusType {
   DEFAULT,
   SUCCESS,
@@ -5,11 +6,12 @@ export enum StatusType {
   ERROR,
   WARNING,
 }
-
-export type RoleType = 'admin' | 'contributor' | 'editor' | 'viewer';
+// FOR: STATIC VALUE
+export type RoleType = "admin" | "contributor" | "editor" | "viewer";
 export type SplitType = "equal" | "exact" | "percentage";
 export type InviteStatusType = "pending" | "accepted";
 
+// FOR: FORM ACTIONS
 export type SignupState = {
   errors?: {
     name?: string[];
@@ -67,7 +69,7 @@ export type GroupState = {
   avatar?: FormDataEntryValue | null;
 } | null;
 
-export type InviteState = {
+export type MemberState = {
   errors?: {
     email?: string[] | null;
     role?: string[] | null;
@@ -77,15 +79,26 @@ export type InviteState = {
   role?: FormDataEntryValue | null;
 } | null;
 
-export type MemberUpdateState = {
-errors?: {
-  role?: string[] | null;
-};
-message: string;
-status: StatusType;
-role?: FormDataEntryValue | null;
+export type ExpenseState = {
+  errors?: {
+    title?: string[] | null;
+    amount?: string[] | null;
+    date?: string[] | null;
+    split?: string[] | null;
+    notes?: string[] | null;
+    receipt?: string[] | null;
+  };
+  message: string;
+  status: StatusType;
+  title?: FormDataEntryValue | null;
+  amount?: FormDataEntryValue | null;
+  date?: FormDataEntryValue | null;
+  split?: FormDataEntryValue | null;
+  notes?: FormDataEntryValue | null;
+  receipt?: FormDataEntryValue | null;
 } | null;
 
+// FOR: TYPE CHECK
 export interface SessionPayload {
   userId: string;
   userMail: string;
@@ -93,7 +106,7 @@ export interface SessionPayload {
 }
 
 export interface UserType {
-  id: string,
+  userId: string;
   name: string;
   email: string;
   phone?: string;
@@ -121,7 +134,7 @@ export interface AllGroupType {
 }
 
 export interface InvitationType {
-  inviteId: string;
+  invitedId: string;
   groupId: string;
   role: RoleType;
   status: InviteStatusType;
@@ -137,4 +150,17 @@ export interface GroupMemberType {
   name: string;
   role: RoleType;
   joinedAt: string;
+}
+
+export interface ExpenseType {
+  expenseId: string;
+  groupId: string;
+  payer: string;
+  payerId: string;
+  title: string;
+  amount: string;
+  split: string;
+  notes?: string;
+  receipt?: string;
+  date: string;
 }

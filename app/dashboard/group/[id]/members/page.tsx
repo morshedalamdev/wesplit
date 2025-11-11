@@ -4,15 +4,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import MemberDrawer from "@/components/create/MemberDrawer";
 import { useGroup } from "@/contexts/groupContext";
 import { GroupMemberType, StatusType } from "@/lib/types";
-import EditMemberDrawer from "@/components/create/EditMemberDrawer";
+import EditMember from "@/components/edit/EditMember";
 import { deleteMember } from "@/actions/membership";
 import { showToast } from "@/lib/utils/showToast";
 
 export default function Members () {
   const { refreshGroupMember, userRole, groupMembers } = useGroup();
   
-    const handleDelete = async (id: string) => {
-      const result = await deleteMember(id, userRole);
+    const handleDelete = async (membershipId: string) => {
+      const result = await deleteMember(membershipId, userRole);
       if (result?.message) showToast(result.message, result?.status);
       if (result?.status == StatusType.SUCCESS) refreshGroupMember();
     };
@@ -53,10 +53,13 @@ export default function Members () {
                 <TableCell>150.00/-</TableCell>
                 {userRole == "admin" && (
                   <TableCell className="flex gap-2">
-                    <EditMemberDrawer data={g}>
-                      <button className="text-amber-500">Edit</button>
-                    </EditMemberDrawer>
-                    |<button onClick={()=>handleDelete(g.membershipId)} className="text-red-500">Delete</button>
+                    <EditMember data={g} />|
+                    <button
+                      onClick={() => handleDelete(g.membershipId)}
+                      className="text-red-500"
+                    >
+                      Delete
+                    </button>
                   </TableCell>
                 )}
               </TableRow>

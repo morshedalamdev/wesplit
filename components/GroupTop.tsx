@@ -1,16 +1,13 @@
 "use client";
 
 import { useGroup } from "@/contexts/groupContext";
+import formatDate from "@/lib/utils/formatDate";
 import { usePathname } from "next/navigation";
 
 export default function GroupTop() {
   const {group} = useGroup();
   const pathname = usePathname();
-  const todayString = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const todayString = formatDate(new Date());
 
   return (
     !pathname.endsWith("settings") && (

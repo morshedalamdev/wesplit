@@ -4,16 +4,16 @@ export const SignupSchema = z
   .object({
     name: z
       .string()
-      .min(2, { error: "Name must be at least 2 characters long." })
+      .min(2, { message: "Name must be at least 2 characters long." })
       .trim(),
-    email: z.email({ error: "Please enter a valid email." }).trim(),
+    email: z.email({ message: "Please enter a valid email." }).trim(),
     password: z
       .string()
-      .min(8, { error: "Be at least 8 characters long" })
-      .regex(/[a-zA-Z]/, { error: "Contain at least one letter." })
-      .regex(/[0-9]/, { error: "Contain at least one number." })
+      .min(8, { message: "Be at least 8 characters long" })
+      .regex(/[a-zA-Z]/, { message: "Contain at least one letter." })
+      .regex(/[0-9]/, { message: "Contain at least one number." })
       .regex(/[^a-zA-Z0-9]/, {
-        error: "Contain at least one special character.",
+        message: "Contain at least one special character.",
       })
       .trim(),
     confirmPassword: z.string().trim(),
@@ -29,8 +29,8 @@ export const SignupSchema = z
   });
 
 export const LoginSchema = z.object({
-  email: z.email({ error: "Please enter a valid email." }).trim(),
-  password: z.string().min(8, { error: "Password is required." }).trim(),
+  email: z.email({ message: "Please enter a valid email." }).trim(),
+  password: z.string().min(8, { message: "Password is required." }).trim(),
 });
 
 export const UpdateUserSchema = z.object({
@@ -38,15 +38,15 @@ export const UpdateUserSchema = z.object({
     .string()
     .min(2, { message: "Name must be at least 2 characters long." })
     .trim(),
-
   email: z.string().email({ message: "Please enter a valid email." }).trim(),
-
-  description: z
-    .string()
-    .min(10, { message: "Note must be at least 10 characters long." })
-    .trim()
-    .optional(),
-
+  description: z.preprocess(
+    (val) => (typeof val === "string" && val.trim() === "" ? undefined : val),
+    z
+      .string()
+      .min(10, { message: "Note must be at least 10 characters long." })
+      .trim()
+      .optional()
+  ),
   phone: z
     .string()
     .trim()
@@ -55,7 +55,6 @@ export const UpdateUserSchema = z.object({
         "Please enter a valid international phone number (E.164 format).",
     })
     .optional(),
-
   avatar: z
     .any()
     .refine(
@@ -69,17 +68,20 @@ export const UpdateUserSchema = z.object({
 });
 
 export const GroupSchema = z.object({
-  id: z.string().trim().optional(),
+  groupId: z.string().trim().optional(),
   role: z.string().trim().optional(),
   name: z
     .string()
-    .min(2, { error: "Name must be at least 2 characters long." })
+    .min(2, { message: "Name must be at least 2 characters long." })
     .trim(),
-  description: z
-    .string()
-    .min(10, { error: "Note mush be at least 10 characters long." })
-    .trim()
-    .optional(),
+  description: z.preprocess(
+    (val) => (typeof val === "string" && val.trim() === "" ? undefined : val),
+    z
+      .string()
+      .min(10, { message: "Note must be at least 10 characters long." })
+      .trim()
+      .optional()
+  ),
   avatar: z
     .any()
     .refine(
@@ -95,13 +97,47 @@ export const GroupSchema = z.object({
 });
 
 export const InviteSchema = z.object({
-  id: z.string().trim().optional(),
+  groupId: z.string().trim().optional(),
+  userRole: z.string().trim().optional(),
   email: z.string().email({ message: "Please enter a valid email." }).trim(),
   role: z.string({ message: "Please select a role." }).trim(),
 });
 
 export const MemberUpdateSchema = z.object({
-  id: z.string().trim().optional(),
+  membershipId: z.string().trim().optional(),
   userRole: z.string().trim().optional(),
   role: z.string({ message: "Please select a role." }).trim(),
+});
+
+export const ExpenseSchema = z.object({
+  groupId: z.string().trim().optional(),
+  expenseId: z.string().trim().optional(),
+  payerId: z.string().trim().optional(),
+  title: z
+    .string()
+    .min(3, { message: "Title must be at least 3 characters long." })
+    .trim(),
+  amount: z.preprocess((val) => {
+    return Number(val);
+  }, z.number({ message: "Please enter the expense amount." })),
+  date: z.preprocess((val) => new Date(val as string), z.date()),
+  split: z.string({ message: "Please select a split method." }).trim(),
+  notes: z.preprocess(
+    (val) => (typeof val === "string" && val.trim() === "" ? undefined : val),
+    z
+      .string()
+      .min(10, { message: "Note must be at least 10 characters long." })
+      .trim()
+      .optional()
+  ),
+  receipt: z
+    .any()
+    .refine(
+      (file) => {
+        if (!file || typeof file === "string") return true;
+        return file.size <= 1_000_000;
+      },
+      { message: "Image size must be less than 1MB." }
+    )
+    .optional(),
 });

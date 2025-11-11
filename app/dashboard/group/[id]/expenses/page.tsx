@@ -1,4 +1,9 @@
+"use client";
+
+import { deleteExpense } from "@/actions/expense";
 import ExpenseDrawer from "@/components/create/ExpenseDrawer";
+import EditExpense from "@/components/edit/EditExpense";
+import ExpenseView from "@/components/ExpenseView";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -8,9 +13,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useExpense } from "@/contexts/expenseContext";
+import { useGroup } from "@/contexts/groupContext";
+import { useUser } from "@/contexts/userContext";
+import { ExpenseType, StatusType } from "@/lib/types";
+import { showToast } from "@/lib/utils/showToast";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function Expenses() {
+  const { userData } = useUser();
+  const { userRole } = useGroup();
+  const { allExpenses, refreshAllExpenses } = useExpense();
+
+  const handleDelete = async (expenseId: string, payerId: string) => {
+    const result = await deleteExpense(expenseId, payerId, userRole);
+    if (result?.message) showToast(result.message, result?.status);
+    if (result?.status == StatusType.SUCCESS) refreshAllExpenses();
+  };
+
   return (
     <div className="x-bg-glass-dark">
       <div className="flex items-center justify-between p-2 border-b border-gray-200">
@@ -19,220 +40,82 @@ export default function Expenses() {
           <ExpenseDrawer />
         </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Sl</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Payer</TableHead>
-            <TableHead>Receipt</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="w-24">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow>
-            <TableCell>1</TableCell>
-            <TableCell>Lunch</TableCell>
-            <TableCell>150.00/-</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>October 13, 2025</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button>|
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>2</TableCell>
-            <TableCell>Office Supplies</TableCell>
-            <TableCell>300.00/-</TableCell>
-            <TableCell>Jane Smith</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>November 5, 2025</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>3</TableCell>
-            <TableCell>Team Outing</TableCell>
-            <TableCell>500.00/-</TableCell>
-            <TableCell>Mike Johnson</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>December 1, 2025</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>4</TableCell>
-            <TableCell>Snacks</TableCell>
-            <TableCell>200.00/-</TableCell>
-            <TableCell>Emily Davis</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>January 10, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>5</TableCell>
-            <TableCell>Software Subscription</TableCell>
-            <TableCell>100.00/-</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>February 15, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>6</TableCell>
-            <TableCell>Travel Expenses</TableCell>
-            <TableCell>400.00/-</TableCell>
-            <TableCell>Jane Smith</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>March 22, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>7</TableCell>
-            <TableCell>Conference Fees</TableCell>
-            <TableCell>250.00/-</TableCell>
-            <TableCell>Mike Johnson</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>April 18, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>8</TableCell>
-            <TableCell>Marketing Materials</TableCell>
-            <TableCell>350.00/-</TableCell>
-            <TableCell>Emily Davis</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>May 30, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>9</TableCell>
-            <TableCell>Client Gifts</TableCell>
-            <TableCell>150.00/-</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>June 12, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>10</TableCell>
-            <TableCell>Website Hosting</TableCell>
-            <TableCell>80.00/-</TableCell>
-            <TableCell>Jane Smith</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>July 8, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>1</TableCell>
-            <TableCell>Lunch</TableCell>
-            <TableCell>150.00/-</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>October 13, 2025</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>2</TableCell>
-            <TableCell>Office Supplies</TableCell>
-            <TableCell>300.00/-</TableCell>
-            <TableCell>Jane Smith</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>November 5, 2025</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>3</TableCell>
-            <TableCell>Team Outing</TableCell>
-            <TableCell>500.00/-</TableCell>
-            <TableCell>Mike Johnson</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>December 1, 2025</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>4</TableCell>
-            <TableCell>Snacks</TableCell>
-            <TableCell>200.00/-</TableCell>
-            <TableCell>Emily Davis</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>January 10, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>5</TableCell>
-            <TableCell>Software Subscription</TableCell>
-            <TableCell>100.00/-</TableCell>
-            <TableCell>John Doe</TableCell>
-            <TableCell>---</TableCell>
-            <TableCell>February 15, 2026</TableCell>
-            <TableCell className="flex gap-2">
-              <button className="text-amber-500">Edit</button> |{" "}
-              <button className="text-red-500">Delete</button>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <div className="flex items-center justify-between p-2 border-t border-gray-200">
-        <p className="text-muted-foreground">1-20 expenses are showing</p>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="text-muted-foreground"
-          >
-            <ArrowLeft />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="text-muted-foreground"
-          >
-            <ArrowRight />
-          </Button>
-        </div>
-      </div>
+      {allExpenses && allExpenses?.length > 0 ? (
+        <>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sl</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Method</TableHead>
+                <TableHead>Payer</TableHead>
+                <TableHead>Receipt</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="w-24">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {allExpenses.map((e: ExpenseType, index: number) => (
+                <TableRow key={e.expenseId}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{e.title}</TableCell>
+                  <TableCell>{e.amount}/-</TableCell>
+                  <TableCell className="capitalize">{e.split}</TableCell>
+                  <TableCell>{e.payer}</TableCell>
+                  <TableCell>
+                    {e?.receipt ? (
+                      <Image
+                        src={`data:image/jpeg;base64,${e.receipt}`}
+                        alt={e.title}
+                        width={41}
+                        height={41}
+                      />
+                    ) : (
+                      "---"
+                    )}
+                  </TableCell>
+                  <TableCell>{e.date}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <ExpenseView data={e} />|
+                      {userData?.userId == e.payerId ? (
+                        <>
+                          <EditExpense data={e} /> |
+                        </>
+                      ) : (
+                        ""
+                      )}
+                      <button onClick={()=>handleDelete(e.expenseId, e.payerId)} className="text-red-500">Delete</button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {/* <div className="flex items-center justify-between p-2 border-t border-gray-200">
+            <p className="text-muted-foreground">1-20 expenses are showing</p>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon-sm"
+                className="text-muted-foreground"
+              >
+                <ArrowLeft />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                className="text-muted-foreground"
+              >
+                <ArrowRight />
+              </Button>
+            </div>
+          </div> */}
+        </>
+      ) : (
+        <p className="text-center p-2">No Expenses in List</p>
+      )}
     </div>
   );
 }

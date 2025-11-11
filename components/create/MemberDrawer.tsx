@@ -17,12 +17,12 @@ import { useGroup } from "@/contexts/groupContext";
 import { useActionState, useEffect } from "react";
 import { showToast } from "@/lib/utils/showToast";
 import { Spinner } from "../ui/spinner";
-import { invite } from "@/actions/invite";
+import { inviteMember } from "@/actions/invite";
 import { StatusType } from "@/lib/types";
 
 export default function MemberDrawer() {
-  const { group, refreshAllGroups } = useGroup();
-  const [state, action, isPending] = useActionState(invite, undefined);
+  const { selectedGroup, userRole, refreshAllGroups } = useGroup();
+  const [state, action, isPending] = useActionState(inviteMember, undefined);
 
   useEffect(() => {
     if (state?.message) showToast(state.message, state?.status);
@@ -41,7 +41,16 @@ export default function MemberDrawer() {
         <form action={action}>
           <FieldGroup className="px-4">
             <Field className="hidden">
-              <Input name="id" type="text" defaultValue={group?.groupId} />
+              <Input
+                name="groupId"
+                type="text"
+                defaultValue={selectedGroup ? selectedGroup : ""}
+              />
+              <Input
+                name="userRole"
+                type="text"
+                defaultValue={userRole ? userRole : ""}
+              />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
