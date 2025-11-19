@@ -13,6 +13,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
     groupId: formData.get("groupId"),
     title: formData.get("title"),
     amount: formData.get("amount"),
+    quantity: formData.get("quantity"),
     date: formData.get("date"),
     split: formData.get("split"),
     notes: formData.get("notes"),
@@ -27,6 +28,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       status: StatusType.INFO,
       title: formData.get("title"),
       amount: formData.get("amount"),
+      quantity: formData.get("quantity"),
       date: formData.get("date"),
       split: formData.get("split"),
       notes: formData.get("notes"),
@@ -37,7 +39,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
   const user = await getUser();
   if (!user) redirect("/login");
 
-  const { participants, groupId, title, amount, date, split, notes, receipt } = validatedFields.data;
+  const { participants, groupId, title, amount, quantity, date, split, notes, receipt } = validatedFields.data;
   const splitAmount = amount / ((participants?.length ?? 0) + 1);
 
   let data;
@@ -50,6 +52,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       createdAt: new Date(),
       title,
       amount,
+      quantity,
       date,
       split,
       notes,
@@ -68,6 +71,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       createdAt: new Date(),
       title,
       amount,
+      quantity,
       date,
       split,
       notes,
@@ -89,25 +93,27 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       status: StatusType.ERROR,
       title: formData.get("title"),
       amount: formData.get("amount"),
+      quantity: formData.get("quantity"),
       date: formData.get("date"),
       split: formData.get("split"),
       notes: formData.get("notes"),
       receipt: formData.get("receipt"),
     }
 
-  // const expense = await expenseCollection.insertOne(data);
+  const expense = await expenseCollection.insertOne(data);
 
-  // if (!expense.acknowledged)
-  //   return {
-  //     message: "An Error Occurred While Adding Expense",
-  //     status: StatusType.ERROR,
-  //     title: formData.get("title"),
-  //     amount: formData.get("amount"),
-  //     date: formData.get("date"),
-  //     split: formData.get("split"),
-  //     notes: formData.get("notes"),
-  //     receipt: formData.get("receipt"),
-  //   };
+  if (!expense.acknowledged)
+    return {
+      message: "An Error Occurred While Adding Expense",
+      status: StatusType.ERROR,
+      title: formData.get("title"),
+      amount: formData.get("amount"),
+      quantity: formData.get("quantity"),
+      date: formData.get("date"),
+      split: formData.get("split"),
+      notes: formData.get("notes"),
+      receipt: formData.get("receipt"),
+    };
 
   return { message: "Successfully Added Expense", status: StatusType.SUCCESS };
 }

@@ -102,6 +102,7 @@ export default function Group() {
                 <TableHead>Sl</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Amount</TableHead>
+                <TableHead>Quantity</TableHead>
                 <TableHead>Payer</TableHead>
                 <TableHead>Date</TableHead>
               </TableRow>
@@ -112,6 +113,7 @@ export default function Group() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{e.title}</TableCell>
                   <TableCell>{e.amount}/-</TableCell>
+                  <TableCell>{e.quantity ? e.quantity : "---"}</TableCell>
                   <TableCell>{e.payer}</TableCell>
                   <TableCell>{e.date}</TableCell>
                 </TableRow>

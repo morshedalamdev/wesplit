@@ -92,6 +92,7 @@ export type ExpenseState = {
   status: StatusType;
   title?: FormDataEntryValue | null;
   amount?: FormDataEntryValue | null;
+  quantity?: FormDataEntryValue | null;
   date?: FormDataEntryValue | null;
   split?: FormDataEntryValue | null;
   notes?: FormDataEntryValue | null;
@@ -163,9 +164,10 @@ export interface ExpenseType {
   payerId: string;
   title: string;
   amount: number;
+  quantity?: string;
   split: string;
   notes?: string;
   receipt?: string;
   date: string;
-  pp: number
+  owed: number
 }

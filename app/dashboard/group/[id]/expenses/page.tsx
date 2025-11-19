@@ -50,7 +50,7 @@ export default function Expenses() {
                 <TableHead>Amount</TableHead>
                 <TableHead>Owed</TableHead>
                 <TableHead>Payer</TableHead>
-                <TableHead>Receipt</TableHead>
+                <TableHead>Quantity</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="w-24">Action</TableHead>
               </TableRow>
@@ -61,22 +61,11 @@ export default function Expenses() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{e.title}</TableCell>
                   <TableCell>{e.amount}/-</TableCell>
-                  <TableCell>{e.pp}/-</TableCell>
+                  <TableCell>{e.owed}/-</TableCell>
                   <TableCell>
                     {e.payerId == userData?.userId ? "You" : e.payer}
                   </TableCell>
-                  <TableCell>
-                    {e?.receipt ? (
-                      <Image
-                        src={`data:image/jpeg;base64,${e.receipt}`}
-                        alt={e.title}
-                        width={41}
-                        height={41}
-                      />
-                    ) : (
-                      "---"
-                    )}
-                  </TableCell>
+                  <TableCell>{e.quantity ? e.quantity : "---"}</TableCell>
                   <TableCell>{e.date}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">

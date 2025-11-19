@@ -77,7 +77,7 @@ export default function ExpenseDrawer () {
                 id="title"
                 name="title"
                 type="text"
-                placeholder="Hotel Rent..."
+                placeholder="Transport Cost..."
                 defaultValue={
                   typeof state?.title === "string" ? state.title : ""
                 }
@@ -87,14 +87,14 @@ export default function ExpenseDrawer () {
                 <FieldError>{state.errors.title}</FieldError>
               )}
             </Field>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <Field>
                 <FieldLabel htmlFor="amount">amount</FieldLabel>
                 <Input
                   id="amount"
                   name="amount"
                   type="text"
-                  placeholder="0,00.00"
+                  placeholder="0,00.00/-"
                   defaultValue={
                     typeof state?.amount === "string" ? state.amount : ""
                   }
@@ -105,32 +105,16 @@ export default function ExpenseDrawer () {
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="date">date</FieldLabel>
-                <DatePicker
-                  id="date"
-                  name="date"
-                  defaultValue={
-                    typeof state?.date === "string" ? state.date : ""
-                  }
-                  isInvalid={state?.errors?.date ? true : false}
-                />
-                {state?.errors?.date && (
-                  <FieldError>{state.errors.date}</FieldError>
-                )}
-              </Field>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field>
-                <FieldLabel htmlFor="receipt">receipt</FieldLabel>
+                <FieldLabel htmlFor="quantity">quantity</FieldLabel>
                 <Input
-                  id="receipt"
-                  name="receipt"
-                  type="file"
-                  accept=".jpg,.jpeg"
+                  id="quantity"
+                  name="quantity"
+                  type="text"
+                  placeholder="kg/gm/ltr/pcs..."
+                  defaultValue={
+                    typeof state?.quantity === "string" ? state.quantity : ""
+                  }
                 />
-                {state?.errors?.receipt && (
-                  <FieldError>{state.errors.receipt}</FieldError>
-                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="split">Split Method</FieldLabel>
@@ -152,6 +136,34 @@ export default function ExpenseDrawer () {
                 </Select>
                 {state?.errors?.split && (
                   <FieldError>{state.errors.split}</FieldError>
+                )}
+              </Field>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field>
+                <FieldLabel htmlFor="receipt">receipt</FieldLabel>
+                <Input
+                  id="receipt"
+                  name="receipt"
+                  type="file"
+                  accept=".jpg,.jpeg"
+                />
+                {state?.errors?.receipt && (
+                  <FieldError>{state.errors.receipt}</FieldError>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="date">date</FieldLabel>
+                <DatePicker
+                  id="date"
+                  name="date"
+                  defaultValue={
+                    typeof state?.date === "string" ? state.date : ""
+                  }
+                  isInvalid={state?.errors?.date ? true : false}
+                />
+                {state?.errors?.date && (
+                  <FieldError>{state.errors.date}</FieldError>
                 )}
               </Field>
             </div>

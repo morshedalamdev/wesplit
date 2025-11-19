@@ -120,6 +120,7 @@ export const ExpenseSchema = z.object({
   amount: z.preprocess((val) => {
     return Number(val);
   }, z.number({ message: "Please enter the expense amount." })),
+  quantity: z.string().trim().optional(),
   date: z.preprocess((val) => new Date(val as string), z.date()),
   split: z.string({ message: "Please select a split method." }).trim(),
   notes: z.preprocess(

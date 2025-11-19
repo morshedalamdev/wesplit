@@ -24,16 +24,24 @@ export default function ExpenseView ({data}:{data: ExpenseType}) {
             {data.payer}
           </p>
           <p>
+            <b>Split Method: </b>
+            {data.split}
+          </p>
+          <p>
             <b>Amount: </b>
-            {data.amount}
+            {data.amount}/-
+          </p>
+          <p>
+            <b>Owed: </b>
+            {data.owed}/-
+          </p>
+          <p>
+            <b>Quantity: </b>
+            {data.quantity ? data.quantity : "---"}
           </p>
           <p>
             <b>Date: </b>
             {data.date}
-          </p>
-          <p>
-            <b>Split Method: </b>
-            {data.split}
           </p>
           {data?.notes && (
             <p className="col-span-2">

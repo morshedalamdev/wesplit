@@ -28,10 +28,10 @@ export async function GET(
           from: "users",
           localField: "payerId",
           foreignField: "_id",
-          as: "user",
+          as: "users",
         },
       },
-      { $unwind: "$user" },
+      { $unwind: "$users" },
     ])
     .toArray();
   if (!expenses) return NextResponse.json(null);
@@ -39,16 +39,20 @@ export async function GET(
   const plainData = expenses.map((item) => ({
     expenseId: item._id.toString(),
     groupId: item.groupId.toString(),
-    payer: item.user.name,
-    payerId: item.payerId,
+    payer: item.users.name,
+    payerId: item.payerId.toString(),
     title: item.title,
     amount: item.amount,
+    quantity: item?.quantity,
     split: item.split,
     notes: item?.notes,
     receipt: item?.receipt,
     date: formatDate(item.date),
-    pp: item.participants[user.userId]?.owed || 0,
+    owed:
+      item.participants.find((p: any) => p.userId.toString() === user.userId)
+        .owed || 0,
   }));
+  console.log("plainData :>> ", plainData);
 
   return NextResponse.json(plainData);
 }
