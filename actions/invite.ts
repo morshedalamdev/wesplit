@@ -12,7 +12,7 @@ import { revalidatePath } from "next/cache";
 
 export async function inviteMember(state: MemberState | undefined, formData: FormData): Promise<MemberState | undefined>{
   const validatedFields = InviteSchema.safeParse({
-    groupId: formData.get("id"),
+    groupId: formData.get("groupId"),
     userRole: formData.get("userRole"),
     email: formData.get("email"),
     role: formData.get("role"),

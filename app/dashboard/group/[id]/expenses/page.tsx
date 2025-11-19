@@ -48,7 +48,7 @@ export default function Expenses() {
                 <TableHead>Sl</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Method</TableHead>
+                <TableHead>Owed</TableHead>
                 <TableHead>Payer</TableHead>
                 <TableHead>Receipt</TableHead>
                 <TableHead>Date</TableHead>
@@ -61,8 +61,10 @@ export default function Expenses() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{e.title}</TableCell>
                   <TableCell>{e.amount}/-</TableCell>
-                  <TableCell className="capitalize">{e.split}</TableCell>
-                  <TableCell>{e.payer}</TableCell>
+                  <TableCell>{e.pp}/-</TableCell>
+                  <TableCell>
+                    {e.payerId == userData?.userId ? "You" : e.payer}
+                  </TableCell>
                   <TableCell>
                     {e?.receipt ? (
                       <Image
@@ -86,7 +88,12 @@ export default function Expenses() {
                       ) : (
                         ""
                       )}
-                      <button onClick={()=>handleDelete(e.expenseId, e.payerId)} className="text-red-500">Delete</button>
+                      <button
+                        onClick={() => handleDelete(e.expenseId, e.payerId)}
+                        className="text-red-500"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </TableCell>
                 </TableRow>

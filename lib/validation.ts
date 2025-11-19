@@ -140,4 +140,5 @@ export const ExpenseSchema = z.object({
       { message: "Image size must be less than 1MB." }
     )
     .optional(),
+  participants: z.array(z.string()).optional(),
 });

@@ -17,6 +17,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
     split: formData.get("split"),
     notes: formData.get("notes"),
     receipt: formData.get("receipt"),
+    participants: JSON.parse((formData.get("participants") as string) || "[]"),
   });
 
   if (!validatedFields.success) {
@@ -36,7 +37,9 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
   const user = await getUser();
   if (!user) redirect("/login");
 
-  const { groupId, title, amount, date, split, notes, receipt } = validatedFields.data;
+  const { participants, groupId, title, amount, date, split, notes, receipt } = validatedFields.data;
+  const splitAmount = amount / ((participants?.length ?? 0) + 1);
+
   let data;
 
   if (receipt?.size > 0) {
@@ -51,6 +54,12 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       split,
       notes,
       receipt: convertImage,
+      participants: participants?.map((id) => {
+        return {
+          userId: new ObjectId(id),
+          owed: parseFloat(splitAmount.toFixed(2)),
+        };
+      }),
     };
   } else {
     data = {
@@ -62,8 +71,16 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       date,
       split,
       notes,
+      participants: participants?.map((id) => {
+        return {
+          userId: new ObjectId(id),
+          owed: parseFloat(splitAmount.toFixed(2)),
+        };
+      }),
     };
   }
+
+  console.log('data :>> ', data);
 
   const expenseCollection = await getCollection("expenses");
   if (!expenseCollection)
@@ -78,19 +95,19 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       receipt: formData.get("receipt"),
     }
 
-  const expense = await expenseCollection.insertOne(data);
+  // const expense = await expenseCollection.insertOne(data);
 
-  if (!expense.acknowledged)
-    return {
-      message: "An Error Occurred While Adding Expense",
-      status: StatusType.ERROR,
-      title: formData.get("title"),
-      amount: formData.get("amount"),
-      date: formData.get("date"),
-      split: formData.get("split"),
-      notes: formData.get("notes"),
-      receipt: formData.get("receipt"),
-    };
+  // if (!expense.acknowledged)
+  //   return {
+  //     message: "An Error Occurred While Adding Expense",
+  //     status: StatusType.ERROR,
+  //     title: formData.get("title"),
+  //     amount: formData.get("amount"),
+  //     date: formData.get("date"),
+  //     split: formData.get("split"),
+  //     notes: formData.get("notes"),
+  //     receipt: formData.get("receipt"),
+  //   };
 
   return { message: "Successfully Added Expense", status: StatusType.SUCCESS };
 }

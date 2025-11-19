@@ -123,6 +123,10 @@ export interface GroupType {
     currency: string;
     defaultSplit: string;
   };
+  members: {
+    userId: string;
+    name: string;
+  }[];
 }
 
 export interface AllGroupType {
@@ -158,9 +162,10 @@ export interface ExpenseType {
   payer: string;
   payerId: string;
   title: string;
-  amount: string;
+  amount: number;
   split: string;
   notes?: string;
   receipt?: string;
   date: string;
+  pp: number
 }

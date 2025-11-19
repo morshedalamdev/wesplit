@@ -47,6 +47,7 @@ export async function GET(
     notes: item?.notes,
     receipt: item?.receipt,
     date: formatDate(item.date),
+    pp: item.participants[user.userId]?.owed || 0,
   }));
 
   return NextResponse.json(plainData);
