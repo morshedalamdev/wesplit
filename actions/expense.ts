@@ -13,10 +13,12 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
     groupId: formData.get("groupId"),
     title: formData.get("title"),
     amount: formData.get("amount"),
+    quantity: formData.get("quantity"),
     date: formData.get("date"),
     split: formData.get("split"),
     notes: formData.get("notes"),
     receipt: formData.get("receipt"),
+    participants: JSON.parse((formData.get("participants") as string) || "[]"),
   });
 
   if (!validatedFields.success) {
@@ -26,6 +28,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       status: StatusType.INFO,
       title: formData.get("title"),
       amount: formData.get("amount"),
+      quantity: formData.get("quantity"),
       date: formData.get("date"),
       split: formData.get("split"),
       notes: formData.get("notes"),
@@ -36,7 +39,9 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
   const user = await getUser();
   if (!user) redirect("/login");
 
-  const { groupId, title, amount, date, split, notes, receipt } = validatedFields.data;
+  const { participants, groupId, title, amount, quantity, date, split, notes, receipt } = validatedFields.data;
+  const splitAmount = amount / ((participants?.length ?? 0) + 1);
+
   let data;
 
   if (receipt?.size > 0) {
@@ -47,10 +52,17 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       createdAt: new Date(),
       title,
       amount,
+      quantity,
       date,
       split,
       notes,
       receipt: convertImage,
+      participants: participants?.map((id) => {
+        return {
+          userId: new ObjectId(id),
+          owed: parseFloat(splitAmount.toFixed(2)),
+        };
+      }),
     };
   } else {
     data = {
@@ -59,11 +71,19 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       createdAt: new Date(),
       title,
       amount,
+      quantity,
       date,
       split,
       notes,
+      participants: participants?.map((id) => {
+        return {
+          userId: new ObjectId(id),
+          owed: parseFloat(splitAmount.toFixed(2)),
+        };
+      }),
     };
   }
+
 
   const expenseCollection = await getCollection("expenses");
   if (!expenseCollection)
@@ -72,6 +92,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       status: StatusType.ERROR,
       title: formData.get("title"),
       amount: formData.get("amount"),
+      quantity: formData.get("quantity"),
       date: formData.get("date"),
       split: formData.get("split"),
       notes: formData.get("notes"),
@@ -86,6 +107,7 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
       status: StatusType.ERROR,
       title: formData.get("title"),
       amount: formData.get("amount"),
+      quantity: formData.get("quantity"),
       date: formData.get("date"),
       split: formData.get("split"),
       notes: formData.get("notes"),

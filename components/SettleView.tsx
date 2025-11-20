@@ -1,10 +1,8 @@
-"use client";
-
+import { SettlementType } from "@/lib/types";
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
-import { ExpenseType } from "@/lib/types";
 import { Button } from "./ui/button";
 
-export default function ExpenseView ({data}:{data: ExpenseType}) {
+export default function SettleView ({data}:{data: SettlementType}) {
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -12,7 +10,7 @@ export default function ExpenseView ({data}:{data: ExpenseType}) {
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Expense Details</DrawerTitle>
+          <DrawerTitle>Settlement Details</DrawerTitle>
         </DrawerHeader>
         <div className="grid grid-cols-2 gap-3 px-3">
           <p className="col-span-2">
@@ -20,44 +18,34 @@ export default function ExpenseView ({data}:{data: ExpenseType}) {
             {data.title}
           </p>
           <p>
-            <b>Payer: </b>
-            {data.payer}
+            <b>From: </b>
+            {data.fromUser}
           </p>
           <p>
-            <b>Split Method: </b>
-            {data.split}
+            <b>To: </b>
+            {data.toUser}
           </p>
           <p>
             <b>Amount: </b>
             {data.amount}/-
           </p>
           <p>
-            <b>Owed: </b>
-            {data.owed}/-
+            <b>Currency: </b>
+            <span className="uppercase">{data.currency}</span>
           </p>
           <p>
-            <b>Quantity: </b>
-            {data.quantity ? data.quantity : "---"}
+            <b>Method: </b>
+            <span className="capitalize">{data.method}</span>
           </p>
           <p>
             <b>Date: </b>
-            {data.date}
+            {data.settledAt}
           </p>
           {data?.notes && (
             <p className="col-span-2">
               <b>Notes: </b>
               {data.notes}
             </p>
-          )}
-          {data?.receipt && (
-            <div className="col-span-2 flex gap-1">
-              <b>Receipt: </b>
-              <img
-                src={`data:image/jpeg;base64,${data.receipt}`}
-                alt={data.title}
-                className="max-w-3/4 w-60 mx-auto"
-              />
-            </div>
           )}
         </div>
         <DrawerFooter>

@@ -92,11 +92,27 @@ export type ExpenseState = {
   status: StatusType;
   title?: FormDataEntryValue | null;
   amount?: FormDataEntryValue | null;
+  quantity?: FormDataEntryValue | null;
   date?: FormDataEntryValue | null;
   split?: FormDataEntryValue | null;
   notes?: FormDataEntryValue | null;
   receipt?: FormDataEntryValue | null;
 } | null;
+
+export type SettlementState = {
+  errors?: {
+    expenseId?: string[] | null;
+    method?: string[] | null;
+    settledAt?: string[] | null;
+    notes?: string[] | null;
+  };
+  message: string;
+  status: StatusType;
+  expenseId?: FormDataEntryValue | null;
+  method?: FormDataEntryValue | null;
+  settledAt?: FormDataEntryValue | null;
+  notes?: FormDataEntryValue | null;
+} | null; 
 
 // FOR: TYPE CHECK
 export interface SessionPayload {
@@ -123,6 +139,10 @@ export interface GroupType {
     currency: string;
     defaultSplit: string;
   };
+  members: {
+    userId: string;
+    name: string;
+  }[];
 }
 
 export interface AllGroupType {
@@ -158,9 +178,35 @@ export interface ExpenseType {
   payer: string;
   payerId: string;
   title: string;
-  amount: string;
+  amount: number;
+  quantity?: string;
   split: string;
   notes?: string;
   receipt?: string;
   date: string;
+  owed: number
+}
+
+export interface SettleExpenseType {
+  expenseId: string;
+  groupId: string;
+  toUserId: string;
+  toUser: string;
+  amount: number;
+}
+
+export interface SettlementType {
+  settlementId: string;
+  expenseId: string;
+  groupId: string;
+  fromUserId: string;
+  fromUser: string;
+  toUserId: string;
+  toUser: string;
+  amount: number;
+  currency: string;
+  method: string;
+  settledAt: string;
+  notes?: string;
+  title: string;
 }

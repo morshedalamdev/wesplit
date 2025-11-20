@@ -14,22 +14,42 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { addExpense } from "@/actions/expense";
 import { Spinner } from "../ui/spinner";
 import { showToast } from "@/lib/utils/showToast";
 import { useExpense } from "@/contexts/expenseContext";
 import { StatusType } from "@/lib/types";
+import { Checkbox } from "../ui/checkbox";
+import { useUser } from "@/contexts/userContext";
 
 export default function ExpenseDrawer () {
-  const { selectedGroup } = useGroup();
+  const { group } = useGroup();
+  const { userData } = useUser();
   const { refreshAllExpenses} = useExpense();
   const [state, action, isPending] = useActionState(addExpense, undefined);
+  const [ participants, setParticipants ] = useState<string[]>([]);
+
 
   useEffect(() => {
     if (state?.message) showToast(state.message, state?.status);
     if (state?.status == StatusType.SUCCESS) refreshAllExpenses();
   }, [state]);
+
+  useEffect(() => {
+    if (group?.members) {
+      const memberIds = group.members
+        .filter((m) => m.userId !== userData?.userId)
+        .map((m) => m.userId);
+      setParticipants(memberIds);
+    }
+  }, [group]);
+
+  const handleCheckbox = (userId: string, isChecked: boolean) => {
+    setParticipants((prev) =>
+      isChecked ? [...prev, userId] : prev.filter((id) => id !== userId)
+    );
+  }
 
   return (
     <Drawer>
@@ -43,10 +63,12 @@ export default function ExpenseDrawer () {
         <form action={action}>
           <FieldGroup className="px-4">
             <Field className="hidden">
-              <Input
-                name="groupId"
+              <input name="groupId" type="text" defaultValue={group?.groupId} />
+              <input
+                name="participants"
                 type="text"
-                defaultValue={selectedGroup ? selectedGroup : ""}
+                value={JSON.stringify(participants)}
+                readOnly
               />
             </Field>
             <Field>
@@ -55,7 +77,7 @@ export default function ExpenseDrawer () {
                 id="title"
                 name="title"
                 type="text"
-                placeholder="Hotel Rent..."
+                placeholder="Transport Cost..."
                 defaultValue={
                   typeof state?.title === "string" ? state.title : ""
                 }
@@ -65,14 +87,14 @@ export default function ExpenseDrawer () {
                 <FieldError>{state.errors.title}</FieldError>
               )}
             </Field>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <Field>
                 <FieldLabel htmlFor="amount">amount</FieldLabel>
                 <Input
                   id="amount"
                   name="amount"
                   type="text"
-                  placeholder="0,00.00"
+                  placeholder="0,00.00/-"
                   defaultValue={
                     typeof state?.amount === "string" ? state.amount : ""
                   }
@@ -83,32 +105,16 @@ export default function ExpenseDrawer () {
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="date">date</FieldLabel>
-                <DatePicker
-                  id="date"
-                  name="date"
-                  defaultValue={
-                    typeof state?.date === "string" ? state.date : ""
-                  }
-                  isInvalid={state?.errors?.date ? true : false}
-                />
-                {state?.errors?.date && (
-                  <FieldError>{state.errors.date}</FieldError>
-                )}
-              </Field>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field>
-                <FieldLabel htmlFor="receipt">receipt</FieldLabel>
+                <FieldLabel htmlFor="quantity">quantity</FieldLabel>
                 <Input
-                  id="receipt"
-                  name="receipt"
-                  type="file"
-                  accept=".jpg,.jpeg"
+                  id="quantity"
+                  name="quantity"
+                  type="text"
+                  placeholder="kg/gm/ltr/pcs..."
+                  defaultValue={
+                    typeof state?.quantity === "string" ? state.quantity : ""
+                  }
                 />
-                {state?.errors?.receipt && (
-                  <FieldError>{state.errors.receipt}</FieldError>
-                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="split">Split Method</FieldLabel>
@@ -133,22 +139,76 @@ export default function ExpenseDrawer () {
                 )}
               </Field>
             </div>
-            <Field>
-              <FieldLabel htmlFor="notes">notes</FieldLabel>
-              <Textarea
-                name="notes"
-                id="notes"
-                placeholder="any additional notes..."
-                className="resize-none"
-                defaultValue={
-                  typeof state?.notes === "string" ? state.notes : ""
-                }
-                aria-invalid={state?.errors?.notes ? true : false}
-              />
-              {state?.errors?.notes && (
-                <FieldError>{state.errors.notes}</FieldError>
-              )}
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field>
+                <FieldLabel htmlFor="receipt">receipt</FieldLabel>
+                <Input
+                  id="receipt"
+                  name="receipt"
+                  type="file"
+                  accept=".jpg,.jpeg"
+                />
+                {state?.errors?.receipt && (
+                  <FieldError>{state.errors.receipt}</FieldError>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="date">date</FieldLabel>
+                <DatePicker
+                  id="date"
+                  name="date"
+                  defaultValue={
+                    typeof state?.date === "string" ? state.date : ""
+                  }
+                  isInvalid={state?.errors?.date ? true : false}
+                />
+                {state?.errors?.date && (
+                  <FieldError>{state.errors.date}</FieldError>
+                )}
+              </Field>
+            </div>
+            <div className="flex gap-3">
+              <div className="flex flex-col gap-1 w-40">
+                <FieldLabel>participants</FieldLabel>
+                {group &&
+                  group?.members.map(
+                    (m) =>
+                      m.userId !== userData?.userId && (
+                        <Field key={m.userId} orientation="horizontal">
+                          <Checkbox
+                            id={`owed${m.userId}`}
+                            checked={participants.includes(m.userId)}
+                            onCheckedChange={(checked) =>
+                              handleCheckbox(m.userId, !!checked)
+                            }
+                          />
+                          <FieldLabel
+                            htmlFor={`owed${m.userId}`}
+                            className="font-normal cursor-pointer line-clamp-1 break-all"
+                          >
+                            {m.name}
+                          </FieldLabel>
+                        </Field>
+                      )
+                  )}
+              </div>
+              <Field>
+                <FieldLabel htmlFor="notes">notes</FieldLabel>
+                <Textarea
+                  name="notes"
+                  id="notes"
+                  placeholder="any additional notes..."
+                  className="resize-none h-full"
+                  defaultValue={
+                    typeof state?.notes === "string" ? state.notes : ""
+                  }
+                  aria-invalid={state?.errors?.notes ? true : false}
+                />
+                {state?.errors?.notes && (
+                  <FieldError>{state.errors.notes}</FieldError>
+                )}
+              </Field>
+            </div>
           </FieldGroup>
           <DrawerFooter>
             <DrawerClose asChild>

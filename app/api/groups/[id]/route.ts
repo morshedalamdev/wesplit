@@ -19,8 +19,48 @@ export async function GET(
   const groupCollection = await getCollection("groups");
   if (!groupCollection) return NextResponse.json(null);
 
-  const group = await groupCollection.findOne({_id: new ObjectId(id)});
+  const group = await groupCollection
+  .aggregate([
+    { $match: { _id: new ObjectId(id) } },
+    {
+      $lookup: {
+        from: "memberships",
+        localField: "_id",
+        foreignField: "groupId",
+        as: "members",
+      },
+    },
+    { $unwind: { path: "$members", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "members.userId",
+        foreignField: "_id",
+        as: "members.user",
+      },
+    },
+    { $unwind: { path: "$members.user", preserveNullAndEmptyArrays: true } },
+    {
+      $group: {
+        _id: "$_id",
+        name: { $first: "$name" },
+        groupAvatar: { $first: "$groupAvatar" },
+        description: { $first: "$description" },
+        ownerId: { $first: "$ownerId" },
+        settings: { $first: "$settings" },
+        createdAt: { $first: "$createdAt" },
+        updatedAt: { $first: "$updatedAt" },
+        members: { $push: "$members" },
+      },
+    },
+  ])
+  .next();
   if(!group) return NextResponse.json(null);
+
+  const members = group.members.map((m: any) => ({
+  userId: m.userId.toString(),
+  name: m.user.name,
+}));
 
   const plainData = {
     groupId: group._id.toString(),
@@ -31,6 +71,7 @@ export async function GET(
     },
     description: group?.description,
     groupAvatar: group?.groupAvatar,
+    members
   };
 
   return NextResponse.json(plainData);
