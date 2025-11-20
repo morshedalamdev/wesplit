@@ -1,6 +1,8 @@
 "use client";
 
+import { deleteSettlement } from "@/actions/settlement";
 import SettleDrawer from "@/components/create/SettleDrawer";
+import EditSettlement from "@/components/edit/EditSettlement";
 import SettleView from "@/components/SettleView";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +16,20 @@ import {
 import { useExpense } from "@/contexts/expenseContext";
 import { useGroup } from "@/contexts/groupContext";
 import { useUser } from "@/contexts/userContext";
-import { SettlementType } from "@/lib/types";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { SettlementType, StatusType } from "@/lib/types";
+import { showToast } from "@/lib/utils/showToast";
+import { ArrowLeft, ArrowRight, Edit } from "lucide-react";
 
 export default function Settlements() {
   const { userData } = useUser();
   const { userRole } = useGroup();
-  const {allSettlements} = useExpense();
+  const {allSettlements, refreshAllSettlements} = useExpense();
+
+  const handleDelete = async (settlementId: string, fromUserId: string) => {
+    const result = await deleteSettlement(settlementId, fromUserId, userRole);
+    if (result?.message) showToast(result.message, result?.status);
+    if (result?.status == StatusType.SUCCESS) refreshAllSettlements();
+  };
 
   return (
     <div className="x-bg-glass-dark">
@@ -59,7 +68,7 @@ export default function Settlements() {
                     <SettleView data={s} />|
                     {userData?.userId == s.fromUserId ? (
                       <>
-                        <button className="text-amber-500">Edit</button> |
+                        <EditSettlement data={s} /> |
                       </>
                     ) : (
                       ""
@@ -67,7 +76,12 @@ export default function Settlements() {
                     {userData?.userId == s.fromUserId ||
                     userRole == "admin" ||
                     userRole == "contributor" ? (
-                      <button className="text-red-500">Delete</button>
+                      <button
+                        onClick={() => handleDelete(s.settlementId, s.fromUserId)}
+                        className="text-red-500"
+                      >
+                        Delete
+                      </button>
                     ) : (
                       ""
                     )}

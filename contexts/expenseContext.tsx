@@ -14,6 +14,7 @@ interface ExpenseContextType {
   selectExpense: (id: string | null) => void;
   refreshSelectedExpense: () => void;
   refreshAllExpenses: () => void;
+  refreshAllSettlements: () => void;
 }
 
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
@@ -46,6 +47,7 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
 
   // Refresh API Calls
   const refreshAllExpenses = () => mutateExpenses(undefined, { revalidate: true });
+  const refreshAllSettlements = () => mutateSettlements(undefined, { revalidate: true });
   const refreshSelectedExpense = () => mutateSelectedExpense(undefined, { revalidate: true });
 
   const value = {
@@ -54,6 +56,7 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
     allSettlements: allSettlements || null,
     expenseSettleList,
     refreshAllExpenses,
+    refreshAllSettlements,
     refreshSelectedExpense,
     selectExpense: setSelectedExpenseId,
   };
