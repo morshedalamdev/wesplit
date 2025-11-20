@@ -37,7 +37,7 @@ export default function Expenses() {
       <div className="flex items-center justify-between p-2 border-b border-gray-200">
         <h3 className="font-medium text-sm">Expenses</h3>
         <div className="flex items-center gap-2">
-          <ExpenseDrawer />
+          {userRole !== "viewer" && <ExpenseDrawer />}
         </div>
       </div>
       {allExpenses && allExpenses?.length > 0 ? (
@@ -77,37 +77,24 @@ export default function Expenses() {
                       ) : (
                         ""
                       )}
-                      <button
-                        onClick={() => handleDelete(e.expenseId, e.payerId)}
-                        className="text-red-500"
-                      >
-                        Delete
-                      </button>
+                      {userData?.userId == e.payerId ||
+                      userRole == "admin" ||
+                      userRole == "contributor" ? (
+                        <button
+                          onClick={() => handleDelete(e.expenseId, e.payerId)}
+                          className="text-red-500"
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          {/* <div className="flex items-center justify-between p-2 border-t border-gray-200">
-            <p className="text-muted-foreground">1-20 expenses are showing</p>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon-sm"
-                className="text-muted-foreground"
-              >
-                <ArrowLeft />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                className="text-muted-foreground"
-              >
-                <ArrowRight />
-              </Button>
-            </div>
-          </div> */}
         </>
       ) : (
         <p className="text-center p-2">No Expenses in List</p>

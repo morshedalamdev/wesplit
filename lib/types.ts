@@ -99,6 +99,21 @@ export type ExpenseState = {
   receipt?: FormDataEntryValue | null;
 } | null;
 
+export type SettlementState = {
+  errors?: {
+    expenseId?: string[] | null;
+    method?: string[] | null;
+    settledAt?: string[] | null;
+    notes?: string[] | null;
+  };
+  message: string;
+  status: StatusType;
+  expenseId?: FormDataEntryValue | null;
+  method?: FormDataEntryValue | null;
+  settledAt?: FormDataEntryValue | null;
+  notes?: FormDataEntryValue | null;
+} | null; 
+
 // FOR: TYPE CHECK
 export interface SessionPayload {
   userId: string;
@@ -178,4 +193,20 @@ export interface SettleExpenseType {
   toUserId: string;
   toUser: string;
   amount: number;
+}
+
+export interface SettlementType {
+  settlementId: string;
+  expenseId: string;
+  groupId: string;
+  fromUserId: string;
+  fromUser: string;
+  toUserId: string;
+  toUser: string;
+  amount: number;
+  currency: string;
+  method: string;
+  settledAt: string;
+  notes?: string;
+  title: string;
 }

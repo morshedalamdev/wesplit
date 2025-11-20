@@ -143,3 +143,24 @@ export const ExpenseSchema = z.object({
     .optional(),
   participants: z.array(z.string()).optional(),
 });
+
+export const SettlementSchema = z.object({
+  settlementId: z.string().trim().optional(),
+  expenseId: z.string({message: "Please select an expense."}).trim(),
+  groupId: z.string().trim(),
+  toUserId: z.string().trim(),
+  amount: z.preprocess((val) => {
+    return Number(val);
+  }, z.number()),
+  currency: z.string().trim(),
+  method: z.string({ message: "Please select a settlement method." }).trim(),
+  settledAt: z.preprocess((val) => new Date(val as string), z.date()),
+  notes: z.preprocess(
+    (val) => (typeof val === "string" && val.trim() === "" ? undefined : val),
+    z
+      .string()
+      .min(10, { message: "Note must be at least 10 characters long." })
+      .trim()
+      .optional()
+  ),
+});

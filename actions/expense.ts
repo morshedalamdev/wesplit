@@ -84,7 +84,6 @@ export async function addExpense(state: ExpenseState | undefined, formData: Form
     };
   }
 
-  console.log('data :>> ', data);
 
   const expenseCollection = await getCollection("expenses");
   if (!expenseCollection)

@@ -24,24 +24,29 @@ export async function GET( req: Request, {params}: {params: {id: string}} ) {
   const expenseCollection = await getCollection("expenses");
   if (!expenseCollection) return NextResponse.json(null);
 
-  const expense = await expenseCollection.aggregate([
-     { $match: { _id: new ObjectId(id) } },
-     {
-          $lookup: {
-            from: "users",
-            localField: "payerId",
-            foreignField: "_id",
-            as: "payerInfo",
-          }
-     }
-  ]).next();
+  const expense = await expenseCollection
+    .aggregate([
+      { $match: { _id: new ObjectId(id) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "payerId",
+          foreignField: "_id",
+          as: "payerInfo",
+        },
+      },
+      {
+        $unwind: "$payerInfo",
+      },
+    ])
+    .next();
   if (!expense) return NextResponse.json(null);
 
   const plainData = {
     expenseId: expense._id.toString(),
     groupId: expense.groupId.toString(),
     toUserId: expense.payerId.toString(),
-    toUser: expense.payerInfo[0]?.name,
+    toUser: expense.payerInfo?.name,
     amount: expense.participants.find(
       (p: any) => p.userId.toString() === user.userId
     )?.owed,
