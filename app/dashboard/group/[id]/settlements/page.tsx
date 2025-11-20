@@ -2,6 +2,7 @@
 
 import { deleteSettlement } from "@/actions/settlement";
 import SettleDrawer from "@/components/create/SettleDrawer";
+import EditSettlement from "@/components/edit/EditSettlement";
 import SettleView from "@/components/SettleView";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,7 @@ import { useGroup } from "@/contexts/groupContext";
 import { useUser } from "@/contexts/userContext";
 import { SettlementType, StatusType } from "@/lib/types";
 import { showToast } from "@/lib/utils/showToast";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Edit } from "lucide-react";
 
 export default function Settlements() {
   const { userData } = useUser();
@@ -67,7 +68,7 @@ export default function Settlements() {
                     <SettleView data={s} />|
                     {userData?.userId == s.fromUserId ? (
                       <>
-                        <button className="text-amber-500">Edit</button> |
+                        <EditSettlement data={s} /> |
                       </>
                     ) : (
                       ""
