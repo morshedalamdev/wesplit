@@ -75,3 +75,35 @@ export async function addSettlement(state: SettlementState |undefined, formaData
     status: StatusType.SUCCESS,
   };
 }
+
+export async function deleteSettlement(
+  settlementId: string | undefined,
+  fromUserId: string | undefined,
+  role: string | null
+): Promise<{ message: string; status: StatusType } | undefined> {
+  const user = await getUser();
+  if (!user) redirect("/login");
+
+  if (!settlementId)
+    return { message: "Settlement Not Found", status: StatusType.ERROR };
+  if (role != "admin" && role != "contributor" && fromUserId != user.userId)
+    return {
+      message: "Not Authorized for This Action",
+      status: StatusType.WARNING,
+    };
+
+  const settlementCollection = await getCollection("settlements");
+  if (!settlementCollection)
+    return {
+      message: "Server Error!",
+      status: StatusType.ERROR,
+    };
+  await settlementCollection?.findOneAndDelete({
+    _id: new ObjectId(settlementId),
+  });
+
+  return {
+    message: "Successfully Deleted The Group",
+    status: StatusType.SUCCESS,
+  };
+}
