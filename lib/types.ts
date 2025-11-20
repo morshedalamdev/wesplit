@@ -171,3 +171,11 @@ export interface ExpenseType {
   date: string;
   owed: number
 }
+
+export interface SettleExpenseType {
+  expenseId: string;
+  groupId: string;
+  toUserId: string;
+  toUser: string;
+  amount: number;
+}

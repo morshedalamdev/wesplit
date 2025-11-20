@@ -22,8 +22,10 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { useExpense } from "@/contexts/expenseContext";
 
 export default function SettleDrawer() {
+  const { expenseSettleList, selectExpense, selectedExpense } = useExpense();
   // const [state, action, isPending] = useActionState(createGroup);
 
   return (
@@ -38,21 +40,25 @@ export default function SettleDrawer() {
         <FieldGroup className="px-4">
           <Field>
             <FieldLabel htmlFor="due">Due</FieldLabel>
-            <Select defaultValue="1">
-              <SelectTrigger id="due">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">October 13, 2025</SelectItem>
-                <SelectItem value="2">November 5, 2025</SelectItem>
-                <SelectItem value="3">December 12, 2025</SelectItem>
-              </SelectContent>
-            </Select>
+            {expenseSettleList && (
+              <Select onValueChange={(val) => selectExpense(val)}>
+                <SelectTrigger id="due">
+                  <SelectValue placeholder="Select an expense" />
+                </SelectTrigger>
+                <SelectContent>
+                  {expenseSettleList.map((e) => (
+                    <SelectItem key={e.expenseId} value={e.expenseId}>
+                      {e.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field>
               <FieldLabel htmlFor="amount">amount</FieldLabel>
-              <Input id="amount" type="number" placeholder="0,00.00" />
+              <Input id="amount" type="number" placeholder="0,00.00" value={selectedExpense?.amount} readOnly />
             </Field>
             <Field>
               <FieldLabel htmlFor="split">Method</FieldLabel>
@@ -72,7 +78,7 @@ export default function SettleDrawer() {
           <div className="grid grid-cols-2 gap-3">
             <Field>
               <FieldLabel htmlFor="to">to</FieldLabel>
-              <Input id="to" type="text" />
+              <Input id="to" type="text" value={selectedExpense?.toUser} readOnly />
             </Field>
             <Field>
               <FieldLabel htmlFor="date">date</FieldLabel>

@@ -50,9 +50,8 @@ export async function GET(
     date: formatDate(item.date),
     owed:
       item.participants.find((p: any) => p.userId.toString() === user.userId)
-        .owed || 0,
+        ?.owed || 0,
   }));
-  console.log("plainData :>> ", plainData);
 
   return NextResponse.json(plainData);
 }
